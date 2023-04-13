@@ -1,0 +1,90 @@
+.author {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.authorTile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date {
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.commentContainer {
+  background-color: #1c1c1c;
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 12px;
+  color: #f8f8f8;
+}
+
+.commentHead {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.commentContent {
+  background-color: #333333;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+
+.menuToggle {
+  top: 10px;
+  right: 10px;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  background: none;
+  border: 0 transparent;
+  font-weight: 600;
+}
+
+.menuToggle:hover {
+  background-color: #c4c4c4;
+  border-radius: 100%;
+}
+
+.menu {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: rgb(31, 31, 31);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.menu button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  text-align: left;
+}
+
+.menu button:hover {
+  background-color: #f8f8f8;
+  color: #333333;
+}
+
+.delete {
+  color: red;
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.3.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:20;stroke-linecap:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#000000;stroke-width:10;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#000000;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<path class="st0" d="M118,166H82.69C45.86,166,16,195.86,16,232.69v196.62C16,466.14,45.86,496,82.69,496h346.62
+	c36.83,0,66.69-29.86,66.69-66.69V232.69c0-36.83-29.86-66.69-66.69-66.69H394"/>
+<path class="st1" d="M299,94"/>
+<path class="st1" d="M256,51"/>
+<path class="st1" d="M256,191"/>
+<path class="st1" d="M256,51"/>
+<path class="st1" d="M254.43,43.18"/>
+<g>
+	<g>
+		<line class="st2" x1="256" y1="361" x2="256" y2="32.69"/>
+		<g>
+			<polygon points="337.8,98.96 323.15,112.6 256.02,40.37 188.87,112.6 174.22,98.96 256.02,11 			"/>
+		</g>
+	</g>
+</g>
+</svg>

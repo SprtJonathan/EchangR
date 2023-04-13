@@ -1,0 +1,551 @@
+.wrapper {
+  position: relative;
+  background-color: black;
+  background-image: linear-gradient(#1a1a1ac3, #1a1a1a67);
+  margin: 1rem auto;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 1rem;
+  color: #f8f8f8;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.headerTitle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleContext {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  color: #f8f8f8;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.authordate {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.authordate p {
+  margin-right: 0.5rem;
+}
+
+.author {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-right: 1rem;
+}
+
+.authorTile {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.floatingUserCard {
+  position: absolute;
+  left: 100%;
+  height: fit-content;
+  z-index: 20;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #f8f8f8;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.date:hover {
+  color: #ffffff;
+}
+
+.postContent {
+  margin: 0.2rem 0;
+  padding: 0.5rem 0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border: grey solid 1px;
+  border-left: 0;
+  border-right: 0;
+}
+
+.attachmentContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Définissez une largeur de 90% pour que l'image ne soit pas trop grande */
+  max-width: 700px; /* Définissez une largeur maximale pour éviter que l'image ne soit trop grande */
+  height: auto; /* Définissez la hauteur sur auto pour que l'image conserve son ratio d'aspect */
+  overflow: hidden; /* Masquez le débordement de l'image en cas de dépassement de la zone du conteneur */
+  border-radius: 10px; /* Ajoutez un arrondi aux coins du conteneur */
+
+  position: relative; /* Définissez la position sur relative pour que les enfants puissent être positionnés relativement à ce conteneur */
+  margin: 1rem auto; /* Ajoutez une marge sur les côtés gauche et droit et une marge supérieure et inférieure de 1rem chacune */
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.attachment {
+  object-fit: contain;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* This CSS code defines a grid layout for a container with class "imageGrid". The grid has columns
+that adjust automatically to fit the available space, with a minimum width of 150px and a maximum
+width of 1fr (which means it will take up as much space as possible). The grid items are separated
+by a gap of 10px. */
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin: 1rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.imageGridSingle {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin: 1rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.imageContainer {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding-bottom: 50%; /* Aspect ratio 2:1 */
+}
+
+.imageThumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageThumbnail:hover {
+  cursor: pointer;
+}
+
+.galleryControls {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.galleryButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(68, 68, 68, 0.477);
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+}
+
+.modalImage {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.descriptionContainer {
+  padding: 1rem;
+  margin: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #f8f8f8;
+  max-width: 800px;
+  width: 100%;
+  justify-content: center;
+}
+
+.description {
+  margin: 0;
+}
+
+.videoPlayerContainer {
+  position: relative;
+  padding-top: 56.25%;
+}
+
+.videoPlayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0 0.2rem 0.2rem 0;
+}
+
+.tags {
+  margin: 0.2rem 0.2rem 0 0;
+  padding: 0.1rem 0.5rem;
+  font-size: 15px;
+  font-weight: 500;
+  color: aliceblue;
+  background-color: rgb(68, 68, 68);
+  border-radius: 50px;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.tags:hover {
+  background-color: rgb(31, 31, 31);
+}
+
+.reactionsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  margin: 0 0.2rem 0.2rem 0;
+}
+
+.reactionButton,
+.confirmCancelButton,
+.confirmButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  background-color: rgb(68, 68, 68);
+  margin: 0.2rem 0.2rem 0 0;
+  padding: 5px 10px;
+  color: aliceblue;
+  border-color: transparent;
+  font-size: 16px;
+  text-align: center;
+  font-weight: 600;
+  height: 35px;
+  min-width: 35px;
+  border-radius: 10px;
+  transition: all 300ms;
+}
+
+.reactionButton:hover {
+  background-color: rgb(31, 31, 31);
+  cursor: pointer;
+}
+
+.reactionButton:focus {
+  outline: none;
+}
+
+.reactionButton.active {
+  background-color: rgb(245, 181, 36);
+  color: rgb(68, 68, 68);
+}
+
+.reactionButton.active:hover {
+  background-color: rgb(245, 181, 36);
+}
+
+.reactionButton.active:focus {
+  outline: none;
+}
+
+.emojiContainer {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.emojiCounter {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 0 4px;
+  padding: 0;
+}
+
+.emojiBox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 5px;
+  z-index: 999;
+}
+
+.emojiBox::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #f5f5f5;
+  border-left: 10px solid transparent;
+}
+
+.emojiButton {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  margin: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.blur {
+  backdrop-filter: blur(5px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Couleur de fond de la roue */
+  border-top: 8px solid #3498db; /* Couleur du trait qui tourne */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite; /* Animation de rotation infinie */
+  margin: 0 auto; /* Centre la roue dans le conteneur */
+}
+
+.menuToggle {
+  top: 10px; /* ajustez la position verticale selon vos besoins */
+  right: 10px; /* ajustez la position horizontale selon vos besoins */
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  background: none;
+  border: 0 transparent;
+  font-weight: 600;
+}
+
+.menuToggle:hover {
+  background-color: rgb(31, 31, 31);
+  border-radius: 100%;
+}
+
+.menu {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: rgb(31, 31, 31);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.menu button {
+  border: none;
+  padding: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  text-align: left;
+}
+
+.menu .delete {
+  color: red;
+}
+
+.postActions {
+  width: 100%;
+  padding: 1rem;
+}
+
+.menuBar {
+  display: flex;
+  background-color: #333333;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 10px;
+  width: fit-content;
+  height: 2rem;
+  overflow: hidden;
+}
+
+.shareButton,
+.commentsButton {
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 100%;
+}
+
+.shareButton:hover,
+.commentsButton:hover {
+  background-color: rgb(31, 31, 31);
+}
+
+.copiedMessage {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333333;
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 10px;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 999;
+}
+
+.copiedMessage.visible {
+  animation: fadeInOut 2.3s;
+  visibility: visible;
+}
+
+.delete {
+  color: red;
+}
+
+.confirmModalWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #00000069;
+  z-index: 10;
+  transition: fadeIn 0.3s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirmModal {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  max-height: 800px;
+  padding: 1rem 2rem;
+  background-color: rgb(31, 31, 31);
+}
+
+.confirmButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.confirmButton {
+  background-color: rgb(138, 0, 0);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  10% {
+    opacity: 1;
+    visibility: visible;
+  }
+  90% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

@@ -1,0 +1,71 @@
+/* components/UserCard.module.css */
+.userCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  background-color: #1c1c1c;
+  padding: 10px;
+  border-radius: 10px;
+  width: 300px;
+  z-index: 20;
+}
+
+.userInfos{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.userProfile {
+  display: flex;
+}
+
+.userCardHeader {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.profilePicture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.displayName {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.username {
+  font-size: 14px;
+  margin: 0;
+}
+
+.userStats {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.followButton {
+  background-color: #52fd00;
+  font-size: 18px;
+  color: black;
+  border-radius: 10px;
+  max-height: 40px;
+}
+
+.followButton:hover {
+  color: white;
+  background-color: #206400;
+}

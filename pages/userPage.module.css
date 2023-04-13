@@ -1,0 +1,72 @@
+.pageContent {
+  width: 90vw;
+  margin: 0.5rem auto;
+}
+
+.userHeader {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.userPostsStatus {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.spacer {
+  margin: 1rem;
+}
+
+.spacerBar {
+  margin: 1rem;
+  background-color: grey;
+  width: 50%;
+  height: 1px;
+}
+
+.userContentSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px grey solid;
+  border-radius: 10px;
+  padding: 1rem 0;
+  margin: 0.5rem 0;
+
+  width: 100%; /* Changez la largeur à 100% pour les petits écrans */
+  max-height: 600px;
+
+  background-color: rgb(28, 28, 28);
+}
+
+/* Ajoutez cette media query pour les grands écrans */
+@media (min-width: 768px) {
+  .userPostsStatus {
+    display: flex;
+    justify-content: center;
+  }
+
+  .userContentSection {
+    flex-basis: 300px;
+    flex-grow: 300;
+    width: 600px; /* Changez la largeur à 600px pour les grands écrans */
+  }
+}
+
+.userContentTitle {
+  margin: 0;
+}
+
+.userContentContainer {
+  overflow-y: auto;
+  border-radius: 10px;
+  width: 80%;
+}
+
+.userContentSection {
+}

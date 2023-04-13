@@ -1,0 +1,133 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-image: linear-gradient(#101010c3, #12121267);
+  padding: 1rem;
+  border: 0 transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.headerLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.header a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.header h1,
+.header h2 {
+  color: #ffffff;
+  margin: 0 1rem;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.userButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.loginButton,
+.signupButton {
+  font-weight: 600;
+  height: 100%;
+  border-radius: 0px;
+  padding: 5px 15px;
+
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(68, 68, 68);
+  border-radius: 9999px;
+  overflow: hidden;
+  height: 40px;
+}
+
+.search form {
+  height: 100%;
+  width: 100%;
+}
+
+.searchBar {
+  background-color: rgb(68, 68, 68);
+  color: white;
+  border: 0 transparent;
+  font-size: 20px;
+  height: 100%;
+  border-radius: 9999px 0 0 9999px;
+  transition: 0.3s all;
+  padding: 0 50px 0 1rem;
+}
+
+.searchBar:hover {
+  background-color: rgb(31, 31, 31);
+  transition: 0.3s all;
+}
+
+.searchBar:focus {
+  background-color: rgb(31, 31, 31);
+  outline: none;
+  width: calc(100%-40px);
+  transition: 0.3s all;
+}
+
+.searchButton {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 100%;
+  border-radius: 100%;
+  border: 0.5px grey solid;
+  padding: 10px;
+}
+
+@media (max-width: 480px) {
+  .header{
+    padding: 2px ;
+  }
+  .loginButton,
+  .signupButton {
+    font-weight: 600;
+    height: 100%;
+    border-radius: 0px;
+    padding: 1px;
+
+    width: 50px;
+
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+
+  .searchBar {
+    background-color: rgb(68, 68, 68);
+    color: white;
+    border: 0 transparent;
+    font-size: 20px;
+    height: 100%;
+    border-radius: 9999px 0 0 9999px;
+    transition: 0.3s all;
+    padding: 0 50px 0 1rem;
+    width: 100px;
+  }
+}

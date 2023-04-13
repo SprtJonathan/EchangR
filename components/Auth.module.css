@@ -1,0 +1,111 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.authHeader {
+  display: flex;
+  background-color: rgb(68, 68, 68);
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 10px;
+  width: 100%;
+  height: 2rem;
+  overflow: hidden;
+}
+
+.authButton {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 100%;
+  background-color: rgb(68, 68, 68);
+}
+
+.authButton:hover {
+  background-color: rgb(31, 31, 31);
+}
+
+.authFormWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* SignUp.module.css */
+
+.formWrapper {
+  border-radius: 10px;
+  margin: 0.2rem;
+  width: 100%;
+}
+
+.formWrapper form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.label {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.input {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #3c3c3c;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+}
+
+.inputDouble {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #3c3c3c;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  width: 70%;
+}
+
+.inputDouble:nth-child(1) {
+  width: 30%;
+}
+
+.input::placeholder {
+  color: #bbbbbb;
+}
+
+.submitForm {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 100%;
+  border-radius: 10px;
+  background-color: rgb(68, 68, 68);
+}
+
+.submitForm:hover {
+  background-color: rgb(31, 31, 31);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

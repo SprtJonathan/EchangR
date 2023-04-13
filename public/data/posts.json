@@ -1,0 +1,89 @@
+[
+  {
+    "id": 1,
+    "title": null,
+    "date": "2023-03-14T10:30:00",
+    "authorImage": "https://i.pravatar.cc/52",
+    "authorName": "Alice Smith",
+    "description": "Ceci est le premier post de l'utilisateur 1.",
+    "attachment": "https://picsum.photos/1280/720",
+    "tags": ["#premierpost"],
+    "reactions": [
+      {
+        "emoji": "👍",
+        "count": 10
+      },
+      {
+        "emoji": "❤️",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Deuxième post",
+    "date": "2023-03-13T12:00:00",
+    "authorImage": "https://i.pravatar.cc/52",
+    "authorName": "Bob Johnson",
+    "description": "Ceci est le deuxième post de l'utilisateur 2.",
+    "attachment": "https://picsum.photos/1280/720",
+    "tags": ["#deuxièmepost", "#random"],
+    "reactions": [
+      {
+        "emoji": "👍",
+        "count": 2
+      },
+      {
+        "emoji": "😆",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": null,
+    "date": "2023-03-12T14:24:00",
+    "authorImage": "https://i.pravatar.cc/52",
+    "authorName": "Charlie Brown",
+    "description": "Ceci est le troisième post de l'utilisateur 3.",
+    "attachment": "https://picsum.photos/1280/720",
+    "tags": ["#troisièmepost", "#inspiration"],
+    "reactions": [
+      {
+        "emoji": "👍",
+        "count": 5
+      },
+      {
+        "emoji": "😍",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Quatrième post",
+    "date": "2023-03-11T16:45:00",
+    "authorImage": "https://i.pravatar.cc/52",
+    "authorName": "Dave Williams",
+    "description": "Ceci est le quatrième post de l'utilisateur 4.",
+    "attachment": null,
+    "tags": ["#quatrièmepost", "#tech"],
+    "reactions": [
+      {
+        "emoji": "👍",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Nouvelle fonctionnalité ajoutée à notre application",
+    "date": "2022-11-02T10:30:00",
+    "authorImage": "https://i.pravatar.cc/52",
+    "authorName": "Alice Dupont",
+    "description": "Nous avons le plaisir de vous annoncer l'ajout d'une nouvelle fonctionnalité à notre application ! Elle permettra à nos utilisateurs de mieux gérer leurs tâches quotidiennes et de rester plus productifs que jamais. Essayez-la dès maintenant !",
+    "attachment": "https://picsum.photos/400",
+    "tags": ["productivité", "nouveauté"],
+    "reactions": null
+  }
+]
