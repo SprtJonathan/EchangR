@@ -1,7 +1,7 @@
-import connection from "../../db.js";
+import connection from "../../../db.js";
 import Cors from "cors";
-import initMiddleware from "../../lib/init-middleware";
-import isAuthenticated from "../../lib/isAuthenticated";
+import initMiddleware from "../../../lib/init-middleware.js";
+import isAuthenticated from "../../../lib/isAuthenticated.js";
 
 const cors = initMiddleware(
   Cors({
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
         [postId, userId, emoji],
         (error, results, fields) => {
           if (error) throw error;
-          console.log(results)
+          //console.log(results)
           if (results.length > 0) {
             connection.query(
               "DELETE FROM reactions WHERE postId = ? AND userId = ? AND emoji = ?",

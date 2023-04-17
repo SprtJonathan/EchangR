@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import Layout, { siteTitle } from "../components/layout";
@@ -15,6 +15,9 @@ import NewPost from "../components/newPost";
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [noMorePosts, setNoMorePosts] = useState(false);
+
+  const [loadingMore, setLoadingMore] = useState(true);
+  const loadingRef = useRef();
 
   const [displayNewPostModal, setDisplayNewPostModal] = useState(false);
 
@@ -111,23 +114,27 @@ export default function Home() {
   }, [searchQuery, selectedTag]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (
-        !noMorePosts &&
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100
-      ) {
-        // console.log("Loading more posts...");
-        fetchData(true);
-      }
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting) {
+          fetchData(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-    window.addEventListener("scroll", handleScroll);
+    const currentLoadingRef = loadingRef.current;
+    if (currentLoadingRef) {
+      observer.observe(currentLoadingRef);
+    }
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (currentLoadingRef) {
+        observer.unobserve(currentLoadingRef);
+      }
     };
-  }, [posts, searchQuery, selectedTag, noMorePosts]);
+  }, [loadingRef, fetchData]);
 
   const filteredPosts = posts;
 
@@ -291,6 +298,11 @@ export default function Home() {
           </>
         )}
       </section>
+      {!noMorePosts && loadingMore && (
+        <div ref={loadingRef} style={{ textAlign: "center", padding: "1rem" }}>
+          Chargement...
+        </div>
+      )}
     </Layout>
   );
 }

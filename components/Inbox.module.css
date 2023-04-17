@@ -1,0 +1,36 @@
+.inbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  max-height: 600px;
+  overflow: auto;
+  background-color: rgb(31, 31, 31);
+  border-radius: 10px;
+}
+
+.inboxHeader {
+  display: flex;
+  justify-content: space-between;
+  background-color: #89f000;
+  color: black;
+  max-width: 600px;
+  padding: 5px 2rem;
+  margin-bottom: 10px;
+  transition: 0.3s all;
+  width: 100%;
+}
+
+.inboxHeader h2 {
+  color: black;
+}
+
+.inboxHeader button {
+  border-radius: 50%;
+}
+
+.conversationsList {
+  margin: 1rem 0;
+  max-height: 200px;
+  overflow-y: auto;
+}

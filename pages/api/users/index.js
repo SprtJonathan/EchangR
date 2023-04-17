@@ -49,23 +49,6 @@ async function deleteImage(path) {
   }
 }
 
-// Fonction pour vérifier si un utilisateur est authentifié
-async function isAuthenticated(req) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return { isAuthenticated: false, message: "Token absent" };
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { isAuthenticated: true, user: decoded };
-  } catch (error) {
-    return { isAuthenticated: false, message: "Token invalide" };
-  }
-}
-
 const apiRoute = nextConnect({
   // Handle any other HTTP method
   onNoMatch(req, res) {
@@ -83,6 +66,8 @@ apiRoute.get(async (req, res) => {
   const userId = req.query.userId;
 
   const token = req.headers.authorization;
+
+  //console.log(req.query)
 
   if (!userId && !token && !username) {
     res.status(400).json({

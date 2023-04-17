@@ -1,0 +1,13 @@
+.displayMessagesButton {
+  background-color: #89f000;
+  color: black;
+  max-width: 600px;
+  padding: 5px 2rem;
+  transition: 0.3s all;
+}
+
+.displayMessagesButton:hover {
+  cursor: pointer;
+  background-color: #bbd900;
+  transition: 0.3s all;
+}

@@ -10,7 +10,7 @@ function NewComment({ postId, onCommentSubmit }) {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch("/api/comments", {
+        const response = await fetch("/api/posts/comments", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

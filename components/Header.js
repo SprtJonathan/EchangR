@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { useRef, useState, useEffect } from "react";
+
 import { useSelector } from "react-redux";
 
 import utilStyles from "../styles/utils.module.css";
@@ -10,6 +12,7 @@ import SelectMenuButton from "./SelectMenuButton";
 import Auth from "../components/Auth";
 import LoggedUser from "../components/LoggedUser";
 import LogOut from "../components/LogOut";
+import DirectMessagesCenter from "./DirectMessagesCenter";
 
 const name = "E-ChangR";
 
@@ -21,8 +24,25 @@ export default function Header({ home, setSearchQuery }) {
     setSearchQuery(e.target[0].value);
   };
 
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.pageYOffset;
+      const direction = lastScrollY.current > currentScrollY ? "up" : "down";
+      setIsHidden(direction === "down");
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${isHidden ? styles.hidden : ""}`}>
       <div className={styles.headerLogo}>
         <>
           <Link href="/">
@@ -85,6 +105,9 @@ export default function Header({ home, setSearchQuery }) {
       {loggedUser.userId ? (
         <>
           <section className={styles.userButtons}>
+            <div className={styles.DMCenter}>
+              <DirectMessagesCenter />
+            </div>
             <button>
               <Link
                 href={`/@${loggedUser.username}`}

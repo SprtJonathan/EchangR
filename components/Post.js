@@ -67,7 +67,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
    */
   async function fetchReactions() {
     try {
-      const response = await fetch(`/api/reactions?postId=${id}`);
+      const response = await fetch(`/api/posts/reactions?postId=${id}`);
       const data = await response.json();
       setPostReactions(data);
     } catch (error) {
@@ -97,7 +97,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch("/api/reactions", {
+        const response = await fetch("/api/posts/reactions", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

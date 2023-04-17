@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -100,10 +101,12 @@ export default function UserCard({
           <div className={styles.userCardHeader}>
             <div className={styles.userProfile}>
               <Link href={`/@${username}`} className={styles.userProfile}>
-                <img
+                <Image
                   className={styles.profilePicture}
                   src={profilePictureUrl}
                   alt={`${displayName}'s profile`}
+                  height={32}
+                  width={32}
                 />
               </Link>
               <div className={styles.userInfo}>

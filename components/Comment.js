@@ -46,7 +46,7 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch("/api/comments", {
+        const response = await fetch("/api/posts/comments", {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,

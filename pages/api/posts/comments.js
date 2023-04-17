@@ -1,7 +1,7 @@
-import connection from "../../db.js";
+import connection from "../../../db.js";
 import Cors from "cors";
-import initMiddleware from "../../lib/init-middleware";
-import isAuthenticated from "../../lib/isAuthenticated";
+import initMiddleware from "../../../lib/init-middleware.js";
+import isAuthenticated from "../../../lib/isAuthenticated.js";
 
 const cors = initMiddleware(
   Cors({

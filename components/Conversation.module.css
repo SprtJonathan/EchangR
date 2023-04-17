@@ -1,0 +1,114 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversationHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: #030303 1px 1px 3px;
+  padding: 5px;
+}
+
+.conversationProfile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.conversationPic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.conversationNames {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.conversationNames h2 {
+  margin-left: 10px;
+}
+
+.conversationNames span {
+  margin-left: 10px;
+  color: grey;
+}
+
+.conversationMessages {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.message {
+  margin: 5px auto;
+  width: 90%;
+  background-color: rgb(68, 68, 68);
+  padding: 10px;
+}
+
+.messageHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin: auto;
+  border-bottom: white 0.5px solid;
+}
+
+.messageHeader span {
+  font-size: 13px;
+}
+
+.messageContent {
+  margin: 5px 0;
+}
+
+.loggedUser {
+  background-color: transparent;
+}
+
+.message strong {
+  font-weight: bold;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.form input {
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form button {
+  color: #fff;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.backButton {
+  color: #fff;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 32px;
+  height: 32px;
+}
+
+.backButton:hover {
+}

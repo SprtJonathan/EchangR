@@ -1,0 +1,37 @@
+.conversationItem {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 3px;
+  transition: 0.3s all;
+}
+
+.conversationItem:hover {
+  border-radius: 10px;
+  background-color: rgb(68, 68, 68);
+  transition: 0.3s all;
+}
+
+.profileImage {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.conversationDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.displayName {
+  font-weight: bold;
+  margin: 0;
+}
+
+.lastMessage {
+  color: #999;
+  font-size: 0.8rem;
+  margin: 0;
+}

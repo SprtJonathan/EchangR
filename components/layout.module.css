@@ -23,6 +23,10 @@
   margin: 3rem 0 0;
 }
 
+.headerMargin{
+  height: 100px;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;

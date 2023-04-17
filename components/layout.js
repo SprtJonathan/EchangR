@@ -25,6 +25,7 @@ export default function Layout({ children, home, setSearchQuery }) {
         <meta name="og:title" content={siteTitle} />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
+      <div className={styles.headerMargin}></div>
       <Header home={home} setSearchQuery={setSearchQuery} />
       <main>{children}</main>
 

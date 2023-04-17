@@ -1,4 +1,4 @@
-import connection from "../../db.js";
+import connection from "../../../db.js";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import nextConnect from "next-connect";
@@ -159,7 +159,7 @@ apiRoute.post(async (req, res) => {
       });
     }
 
-    console.log(tags);
+    //console.log(tags);
 
     connection.query(
       "INSERT INTO posts (title, description, attachment, tags, authorId) VALUES (?, ?, ?, ?, ?)",
@@ -188,7 +188,6 @@ apiRoute.post(async (req, res) => {
     res.status(500).json({ message: "Error creating post" });
   }
 });
-// });
 
 apiRoute.put(async (req, res) => {});
 

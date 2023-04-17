@@ -21,7 +21,7 @@ function CommentsContainer({ postId }) {
   async function fetchComments(sortOption = sort) {
     try {
       const response = await fetch(
-        `/api/comments?postId=${postId}&sort=${sortOption}`
+        `/api/posts/comments?postId=${postId}&sort=${sortOption}`
       );
       const data = await response.json();
       setComments(data);
