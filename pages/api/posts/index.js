@@ -88,7 +88,7 @@ apiRoute.get(async (req, res) => {
   if (postId) {
     // Si un ID de post est fourni, récupérez uniquement ce post spécifique
     connection.query(
-      "SELECT * FROM posts WHERE id = ?",
+      "SELECT * FROM posts WHERE id = $1",
       [postId],
       function (error, results, fields) {
         if (error) throw error;
@@ -98,7 +98,7 @@ apiRoute.get(async (req, res) => {
   } else if (userId) {
     // Si un userId est fourni, récupérez uniquement les posts dont le authorId == userId
     connection.query(
-      "SELECT * FROM posts WHERE authorId = ? ORDER BY date DESC LIMIT ? OFFSET ?",
+      "SELECT * FROM posts WHERE authorId = $1 ORDER BY date DESC LIMIT $2 OFFSET $3",
       [userId, limit, offset],
       function (error, results, fields) {
         if (error) throw error;
@@ -111,26 +111,26 @@ apiRoute.get(async (req, res) => {
     // console.log(tagFilter);
     // console.log(limit);
     // console.log(offset);
+    
+    const searchPattern = `%${searchQuery}%`;
+
     connection.query(
       `SELECT * FROM posts
-       WHERE (? IS NULL OR tags LIKE ?)
-       AND (title LIKE ? OR description LIKE ? OR authorId IN (
-         SELECT id FROM users WHERE username LIKE ? OR displayName LIKE ?
+       WHERE ($1 IS NULL OR tags LIKE $2)
+       AND (title LIKE $3 OR description LIKE $3 OR authorId IN (
+         SELECT id FROM users WHERE username LIKE $3 OR displayName LIKE $3
        ))
-       ORDER BY date DESC LIMIT ? OFFSET ?`,
+       ORDER BY date DESC LIMIT $4 OFFSET $5`,
       [
         tagFilter,
         tagFilter ? `%${tagFilter}%` : null,
-        `%${searchQuery}%`,
-        `%${searchQuery}%`,
-        `%${searchQuery}%`,
-        `%${searchQuery}%`,
+        searchPattern,
         limit,
         offset,
       ],
       function (error, results, fields) {
         if (error) throw error;
-        console.log("J'appelle");
+        console.log("Chargement des posts");
         res.status(200).json(results);
       }
     );
@@ -162,7 +162,7 @@ apiRoute.post(async (req, res) => {
     //console.log(tags);
 
     connection.query(
-      "INSERT INTO posts (title, description, attachment, tags, authorId) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO posts (title, description, attachment, tags, authorId) VALUES ($1, $2, $3, $4, $5)",
       [title, description, JSON.stringify(attachmentsPaths), tags, authorId],
       function (error, results, fields) {
         if (error) {
@@ -210,7 +210,7 @@ apiRoute.delete(async (req, res) => {
       if (error) throw error;
 
       connection.query(
-        "SELECT attachment FROM posts WHERE id = ?",
+        "SELECT attachment FROM posts WHERE id = $1",
         [postId],
         async function (error, results, fields) {
           if (error) {
@@ -222,7 +222,7 @@ apiRoute.delete(async (req, res) => {
           const attachmentPaths = JSON.parse(results[0].attachment);
 
           connection.query(
-            "DELETE FROM comments WHERE postId = ?",
+            "DELETE FROM comments WHERE postId = $1",
             [postId],
             function (error, results, fields) {
               if (error) {
@@ -232,7 +232,7 @@ apiRoute.delete(async (req, res) => {
               }
 
               connection.query(
-                "DELETE FROM reactions WHERE postId = ?",
+                "DELETE FROM reactions WHERE postId = $1",
                 [postId],
                 function (error, results, fields) {
                   if (error) {
@@ -242,7 +242,7 @@ apiRoute.delete(async (req, res) => {
                   }
 
                   connection.query(
-                    "DELETE FROM posts WHERE id = ?",
+                    "DELETE FROM posts WHERE id = $1",
                     [postId],
                     async function (error, results, fields) {
                       if (error) {

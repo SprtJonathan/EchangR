@@ -17,7 +17,7 @@ apiRoute.get(async (req, res) => {
       .json({ message: "Veuillez fournir un nom d'utilisateur à vérifier." });
   } else {
     connection.query(
-      "SELECT COUNT(*) AS count FROM users WHERE username = ?",
+      "SELECT COUNT(*) AS count FROM users WHERE username = $1",
       [username],
       (error, results) => {
         if (error) {

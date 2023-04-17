@@ -17,7 +17,7 @@ handler.get(async (req, res) => {
       `
       SELECT uf.following_id
       FROM user_followers AS uf
-      WHERE uf.follower_id = ?
+      WHERE uf.follower_id = $1
     `,
       [userId],
       (error, followingResults) => {
@@ -35,7 +35,7 @@ handler.get(async (req, res) => {
           `
           SELECT uf.follower_id
           FROM user_followers AS uf
-          WHERE uf.following_id = ?
+          WHERE uf.following_id = $1
         `,
           [userId],
           (error, followersResults) => {
@@ -74,7 +74,7 @@ handler.post(async (req, res) => {
     connection.query(
       `
       SELECT * FROM user_followers
-      WHERE follower_id = ? AND following_id = ?
+      WHERE follower_id = $1 AND following_id = $2
     `,
       [followerId, followingId],
       (error, results) => {
@@ -90,7 +90,7 @@ handler.post(async (req, res) => {
           connection.query(
             `
             DELETE FROM user_followers
-            WHERE follower_id = ? AND following_id = ?
+            WHERE follower_id = $1 AND following_id = $2
           `,
             [followerId, followingId],
             (error) => {
@@ -108,7 +108,7 @@ handler.post(async (req, res) => {
           connection.query(
             `
             INSERT INTO user_followers (follower_id, following_id)
-            VALUES (?, ?)
+            VALUES ($1, $2)
           `,
             [followerId, followingId],
             (error) => {

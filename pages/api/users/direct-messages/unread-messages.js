@@ -33,7 +33,7 @@ apiRoute.get(async (req, res) => {
         INNER JOIN (
           SELECT conversation_id, MIN(id) AS min_id
           FROM unread_messages
-          WHERE user_id = ?
+          WHERE user_id = $1
           GROUP BY conversation_id
         ) AS um
         ON dm.id = um.min_id
@@ -72,7 +72,7 @@ apiRoute.delete(async (req, res) => {
   }
 
   connection.query(
-    "DELETE FROM unread_messages WHERE user_id = ? AND message_id = ?",
+    "DELETE FROM unread_messages WHERE user_id = $1 AND message_id = $2",
     [userId, messageId],
     (error, result) => {
       if (error) {

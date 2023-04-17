@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       const { postId } = req.query;
 
       connection.query(
-        "SELECT * FROM comments WHERE postId = ?",
+        "SELECT * FROM comments WHERE postId = $1",
         [postId],
         (error, results, fields) => {
           if (error) throw error;
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       const { postId, comment } = req.body;
 
       connection.query(
-        "INSERT INTO comments (authorId, postId, comment) VALUES (?, ?, ?)",
+        "INSERT INTO comments (authorId, postId, comment) VALUES ($1, $2, $3)",
         [userId, postId, comment],
         (error, results, fields) => {
           if (error) throw error;
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       const { commentId, comment } = req.body;
 
       connection.query(
-        "UPDATE comments SET comment = ? WHERE commentId = ? AND authorId = ?",
+        "UPDATE comments SET comment = $1 WHERE commentId = $2 AND authorId = $3",
         [comment, commentId, userId],
         (error, results, fields) => {
           if (error) throw error;
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
       const { commentId } = req.body;
 
       connection.query(
-        "SELECT * FROM comments WHERE commentId = ?",
+        "SELECT * FROM comments WHERE commentId = $1",
         [commentId],
         (error, results, fields) => {
           if (error) throw error;
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
             const comment = results[0];
             if (comment.authorId === userId || roleId > 0) {
               connection.query(
-                "DELETE FROM comments WHERE commentId = ?",
+                "DELETE FROM comments WHERE commentId = $1",
                 [commentId],
                 (error, results, fields) => {
                   if (error) throw error;

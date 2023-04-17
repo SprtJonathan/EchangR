@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       const { postId } = req.query;
 
       connection.query(
-        "SELECT emoji, COUNT(*) as count FROM reactions WHERE postId = ? GROUP BY emoji",
+        "SELECT emoji, COUNT(*) as count FROM reactions WHERE postId = $1 GROUP BY emoji",
         [postId],
         (error, results, fields) => {
           if (error) throw error;
@@ -40,14 +40,14 @@ export default async function handler(req, res) {
       const { postId, emoji } = req.body;
 
       connection.query(
-        "SELECT * FROM reactions WHERE postId = ? AND userId = ? AND emoji = ?",
+        "SELECT * FROM reactions WHERE postId = $1 AND userId = $2 AND emoji = $3",
         [postId, userId, emoji],
         (error, results, fields) => {
           if (error) throw error;
           //console.log(results)
           if (results.length > 0) {
             connection.query(
-              "DELETE FROM reactions WHERE postId = ? AND userId = ? AND emoji = ?",
+              "DELETE FROM reactions WHERE postId = $1 AND userId = $2 AND emoji = $3",
               [postId, userId, emoji],
               (error, results, fields) => {
                 if (error) throw error;
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
             );
           } else {
             connection.query(
-              "INSERT INTO reactions (postId, userId, emoji) VALUES (?, ?, ?)",
+              "INSERT INTO reactions (postId, userId, emoji) VALUES ($1, $2, $3)",
               [postId, userId, emoji],
               (error, results, fields) => {
                 if (error) throw error;

@@ -32,13 +32,13 @@ apiRoute.get(async (req, res) => {
   const sql = `
     SELECT *
     FROM direct_messages
-    WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)
+    WHERE (sender_id = $1 AND recipient_id = $2) OR (sender_id = $2 AND recipient_id = $1)
     ORDER BY sent_date;
   `;
 
   connection.query(
     sql,
-    [senderId, recipientId, recipientId, senderId],
+    [senderId, recipientId],
     (error, results) => {
       if (error) {
         res.status(500).json({
@@ -81,7 +81,7 @@ apiRoute.post(async (req, res) => {
   console.log(newMessage);
 
   connection.query(
-    "INSERT INTO direct_messages SET ?",
+    "INSERT INTO direct_messages SET $1",
     newMessage,
     (error, result) => {
       if (error) {
@@ -92,7 +92,7 @@ apiRoute.post(async (req, res) => {
       } else {
         const messageId = result.insertId;
         connection.query(
-          "INSERT INTO unread_messages (user_id, message_id) VALUES (?, ?)",
+          "INSERT INTO unread_messages (user_id, message_id) VALUES ($1, $2)",
           [recipient_id, messageId],
           (error) => {
             if (error) {

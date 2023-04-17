@@ -35,28 +35,24 @@ JOIN (
   SELECT
     MAX(message_id) AS last_message_id
   FROM direct_messages
-  WHERE sender_id = ? OR recipient_id = ?
+  WHERE sender_id = $1 OR recipient_id = $1
   GROUP BY LEAST(sender_id, recipient_id), GREATEST(sender_id, recipient_id)
 ) AS last_messages ON dm.message_id = last_messages.last_message_id
-WHERE (dm.sender_id = ? OR dm.recipient_id = ?) AND u.userId != ?
+WHERE (dm.sender_id = $1 OR dm.recipient_id = $1) AND u.userId != $1
 ORDER BY dm.sent_date DESC;
 
       `;
 
-  connection.query(
-    sql,
-    [userId, userId, userId, userId, userId],
-    (error, results) => {
-      if (error) {
-        res.status(500).json({
-          message:
-            "Une erreur s'est produite lors de la récupération des conversations.",
-        });
-      } else {
-        res.status(200).json(results);
-      }
+  connection.query(sql, [userId], (error, results) => {
+    if (error) {
+      res.status(500).json({
+        message:
+          "Une erreur s'est produite lors de la récupération des conversations.",
+      });
+    } else {
+      res.status(200).json(results);
     }
-  );
+  });
 });
 
 export default apiRoute;

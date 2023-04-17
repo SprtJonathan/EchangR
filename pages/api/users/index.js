@@ -87,10 +87,10 @@ apiRoute.get(async (req, res) => {
     sql =
       "SELECT userId, username, displayName, profilePictureUrl, userDescription, created_at, updated_at FROM users WHERE ";
     if (userId) {
-      sql += "userId = ?";
+      sql += "userId = $1";
       params = [userId];
     } else {
-      sql += "username = ?";
+      sql += "username = $1";
       params = [username];
     }
   }
@@ -116,7 +116,7 @@ apiRoute.get(async (req, res) => {
           `
           SELECT uf.following_id
           FROM user_followers AS uf
-          WHERE uf.follower_id = ?
+          WHERE uf.follower_id = $1
         `,
           [user.userId],
           (error, following) => {
@@ -133,7 +133,7 @@ apiRoute.get(async (req, res) => {
               `
               SELECT uf.follower_id
               FROM user_followers AS uf
-              WHERE uf.following_id = ?
+              WHERE uf.following_id = $1
             `,
               [user.userId],
               (error, followers) => {
@@ -191,7 +191,7 @@ apiRoute.post(async (req, res) => {
           });
         } else {
           connection.query(
-            "INSERT INTO users SET ?",
+            "INSERT INTO users SET $1",
             newUser,
             (error, result) => {
               if (error) {
@@ -211,11 +211,11 @@ apiRoute.post(async (req, res) => {
         const userEmail = req.body.email;
         const userPassword = req.body.password;
 
-        let sqlRequest = "SELECT * FROM users WHERE email = ?";
+        let sqlRequest = "SELECT * FROM users WHERE email = $1";
         if (!/^\S+@\S+\.\S+$/.test(userEmail)) {
-          sqlRequest = "SELECT * FROM users WHERE username = ?";
+          sqlRequest = "SELECT * FROM users WHERE username = $1";
         } else {
-          sqlRequest = "SELECT * FROM users WHERE email = ?";
+          sqlRequest = "SELECT * FROM users WHERE email = $1";
         }
 
         connection.query(sqlRequest, [userEmail], async (error, results) => {
@@ -240,7 +240,7 @@ apiRoute.post(async (req, res) => {
                 `
                   SELECT uf.following_id
                   FROM user_followers AS uf
-                  WHERE uf.follower_id = ?
+                  WHERE uf.follower_id = $1
                 `,
                 [user.userId],
                 (error, following) => {
@@ -257,7 +257,7 @@ apiRoute.post(async (req, res) => {
                     `
                       SELECT uf.follower_id
                       FROM user_followers AS uf
-                      WHERE uf.following_id = ?
+                      WHERE uf.following_id = $1
                     `,
                     [user.userId],
                     (error, followers) => {
