@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 // Fonction pour vérifier si un utilisateur est authentifié
-async function isAuthenticated(req) {
+export default async function isAuthenticated(req) {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -16,3 +16,4 @@ async function isAuthenticated(req) {
     return { isAuthenticated: false, message: "Token invalide" };
   }
 }
+

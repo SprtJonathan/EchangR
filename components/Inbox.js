@@ -11,8 +11,16 @@ const Inbox = ({ userId, closeInbox }) => {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    fetch(`/api/users/direct-messages/conversations?userId=${userId}`)
+    fetch(`/api/users/direct-messages/conversations?userId=${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
         console.log("La conv : ");
@@ -29,7 +37,13 @@ const Inbox = ({ userId, closeInbox }) => {
     // Écouter les nouveaux messages
     socket.on("newMessage", (newMessage) => {
       // Mettre à jour la liste des conversations
-      fetch(`/api/users/direct-messages/conversations?userId=${userId}`)
+      fetch(`/api/users/direct-messages/conversations?userId=${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
           setConversations(data);

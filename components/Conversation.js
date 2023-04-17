@@ -7,12 +7,21 @@ import styles from "./Conversation.module.css";
 const Conversation = ({ conversation, userId, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  
+  const token = localStorage.getItem("token");
 
   const lastMessageRef = useRef(null);
 
   const fetchMessages = async () => {
     const response = await fetch(
-      `/api/users/direct-messages?senderId=${conversation.sender_id}&recipientId=${conversation.recipient_id}`
+      `/api/users/direct-messages?senderId=${conversation.sender_id}&recipientId=${conversation.recipient_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     const data = await response.json();
     console.log(data);

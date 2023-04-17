@@ -19,11 +19,11 @@ apiRoute.get(async (req, res) => {
     return;
   }
 
-  // const authResult = await isAuthenticated(req);
-  // if (!authResult.isAuthenticated) {
-  //   res.status(401).json({ message: authResult.message });
-  //   return;
-  // }
+  const authResult = await isAuthenticated(req);
+  if (!authResult.isAuthenticated) {
+    res.status(401).json({ message: authResult.message });
+    return;
+  }
 
   const sql = `
   SELECT
