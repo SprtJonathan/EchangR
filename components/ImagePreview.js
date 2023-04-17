@@ -144,7 +144,7 @@ const ImagePreview = ({ attachments, onAttachmentsChange, multiple, type }) => {
           <p className={styles.uploadButtonContent}>
             {UploadIcon}
 
-            <div>Upload image</div>
+            <span>Upload image</span>
             <span>15Mo max.</span>
           </p>
         )}

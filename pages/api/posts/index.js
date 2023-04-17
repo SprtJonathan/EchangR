@@ -108,17 +108,17 @@ apiRoute.get(async (req, res) => {
   } else {
     // Si aucun ID de post n'est fourni, récupérez tous les posts
     // console.log(searchQuery);
-    // console.log(tagFilter);
+    console.log(tagFilter);
     // console.log(limit);
     // console.log(offset);
-    
+
     const searchPattern = `%${searchQuery}%`;
 
     connection.query(
       `SELECT * FROM posts
        WHERE ($1 IS NULL OR tags LIKE $2)
-       AND (title LIKE $3 OR description LIKE $3 OR authorId IN (
-         SELECT id FROM users WHERE username LIKE $3 OR displayName LIKE $3
+       AND (title LIKE $3 OR description LIKE $3 OR "authorId" IN (
+         SELECT id FROM users WHERE username LIKE $3 OR "displayName" LIKE $3
        ))
        ORDER BY date DESC LIMIT $4 OFFSET $5`,
       [
