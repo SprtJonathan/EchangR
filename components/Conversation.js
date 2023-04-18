@@ -6,7 +6,7 @@ import styles from "./Conversation.module.css";
 const Conversation = ({ conversation, user_id, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState(null); // Websocket
 
   const token = localStorage.getItem("token");
 
