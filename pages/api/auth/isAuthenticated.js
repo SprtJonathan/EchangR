@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import connection from "./../db.js";
+import connection from "../../../db.js";
 
 // Fonction pour vérifier si un utilisateur est authentifié
 export default async function isAuthenticated(req) {

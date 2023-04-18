@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Layout from "../components/Layout"; // Utilisez votre composant de mise en page ici
 
 const EmailVerification = () => {
   const router = useRouter();
