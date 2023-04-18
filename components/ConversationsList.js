@@ -12,7 +12,7 @@ const ConversationsList = ({ conversation, onSelectConversation }) => {
       className={styles.conversationItem}
     >
       <img
-        src={conversation.profilePictureUrl}
+        src={conversation.profile_picture_url}
         alt={`${conversation.displayName} profile`}
         className={styles.profileImage}
       />

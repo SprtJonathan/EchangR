@@ -18,23 +18,25 @@ export default async function handler(req, res) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const {
-      userId,
+      user_id,
       username,
       displayName,
       email,
-      roleId,
-      profilePictureUrl,
+      role_id,
+      profile_picture_url,
       following,
       followers,
     } = decoded;
 
+    // console.log(decoded)
+
     res.status(200).json({
-      userId,
+      user_id,
       username,
       displayName,
       email,
-      roleId,
-      profilePictureUrl,
+      role_id,
+      profile_picture_url,
       following,
       followers,
     });

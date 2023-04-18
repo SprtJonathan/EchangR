@@ -7,6 +7,9 @@ import nextConnect from "next-connect";
 import fs from "fs";
 import { promisify } from "util";
 
+import sendVerificationEmail from "../sendVerificationEmail";
+import { v4 as uuidv4 } from "uuid";
+
 // Returns a Multer instance that provides several methods for generating
 // middleware that process files uploaded in multipart/form-data format.
 const storage = multer.diskStorage({
@@ -35,7 +38,7 @@ const upload = multer({
     }
     cb(null, true);
   },
-  arrayField: [{ name: "profile_picture", maxCount: 10 }],
+  fields: [{ name: "profile_picture", maxCount: 10 }], // Si ça ne fonctionne plus, retourner à arrayFields
 });
 
 const unlinkAsync = promisify(fs.unlink);
@@ -61,15 +64,18 @@ const uploadMiddleware = upload.single("profile_picture");
 // Adds the middleware to Next-Connect
 apiRoute.use(uploadMiddleware);
 
+// GET
 apiRoute.get(async (req, res) => {
   const username = req.query.username;
-  const userId = req.query.userId;
+  const user_id = req.query.user_id;
+
+  console.log(req.query);
 
   const token = req.headers.authorization;
 
   //console.log(req.query)
 
-  if (!userId && !token && !username) {
+  if (!user_id && !token && !username) {
     res.status(400).json({
       message:
         "Veuillez fournir un identifiant d'utilisateur, un nom d'utilisateur ou un token JWT valide.",
@@ -79,16 +85,16 @@ apiRoute.get(async (req, res) => {
 
   let sql, params;
 
-  if (!userId && !username) {
+  if (!user_id && !username) {
     sql =
-      "SELECT userId, username, displayName, profilePictureUrl, userDescription, created_at, updated_at FROM users";
+      "SELECT user_id, username, display_name, profile_picture_url, user_description, created_at, updated_at FROM users";
     params = [];
   } else {
     sql =
-      "SELECT userId, username, displayName, profilePictureUrl, userDescription, created_at, updated_at FROM users WHERE ";
-    if (userId) {
-      sql += "userId = $1";
-      params = [userId];
+      "SELECT user_id, username, display_name, profile_picture_url, user_description, created_at, updated_at FROM users WHERE ";
+    if (user_id) {
+      sql += "user_id = $1";
+      params = [user_id];
     } else {
       sql += "username = $1";
       params = [username];
@@ -101,15 +107,16 @@ apiRoute.get(async (req, res) => {
         message:
           "Une erreur s'est produite lors de la récupération de l'utilisateur.",
       });
-    } else if (results.length === 0 && (userId || username)) {
+    } else if (results.rowCount === 0 && (user_id || username)) {
       res.status(404).json({
         message: "L'utilisateur n'a pas été trouvé.",
       });
     } else {
-      if (!userId && !username) {
+      if (!user_id && !username) {
         res.status(200).json(results);
       } else {
-        const user = results[0];
+        const user = results.rows[0];
+        //console.log(user)
 
         // Récupérer les utilisateurs suivis
         connection.query(
@@ -118,7 +125,7 @@ apiRoute.get(async (req, res) => {
           FROM user_followers AS uf
           WHERE uf.follower_id = $1
         `,
-          [user.userId],
+          [user.user_id],
           (error, following) => {
             if (error) {
               res.status(500).json({
@@ -135,7 +142,7 @@ apiRoute.get(async (req, res) => {
               FROM user_followers AS uf
               WHERE uf.following_id = $1
             `,
-              [user.userId],
+              [user.user_id],
               (error, followers) => {
                 if (error) {
                   res.status(500).json({
@@ -168,9 +175,9 @@ apiRoute.post(async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const profilePictureFile = req.file;
-    let profilePictureUrl;
+    let profile_picture_url;
     if (profilePictureFile) {
-      profilePictureUrl =
+      profile_picture_url =
         "/uploads/users/profile-pictures/" + profilePictureFile.filename;
     }
 
@@ -183,24 +190,38 @@ apiRoute.post(async (req, res) => {
           lname,
           email,
           password: hashedPassword,
-          profilePictureUrl: profilePictureUrl || "/images/ProfileDefault.png",
+          profile_picture_url:
+            profile_picture_url || "/images/ProfileDefault.png",
         };
         if (!/^\S+@\S+\.\S+$/.test(newUser.email)) {
           res.status(400).json({
             message: "L'adresse e-mail fournie n'est pas valide.",
           });
         } else {
+          const emailVerificationToken = uuidv4();
+
           connection.query(
-            "INSERT INTO users SET $1",
-            newUser,
+            `INSERT INTO users (username, display_name, fname, lname, email, password, profile_picture_url, email_verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [
+              newUser.username,
+              newUser.displayName,
+              newUser.fname,
+              newUser.lname,
+              newUser.email,
+              newUser.password,
+              newUser.profile_picture_url,
+              emailVerificationToken,
+            ],
             (error, result) => {
+              console.log(error);
               if (error) {
                 res.status(500).json({
                   message:
                     "Une erreur s'est produite lors de la création de l'utilisateur.",
                 });
               } else {
-                res.status(201).json({ userId: result.insertId, ...newUser });
+                sendVerificationEmail(newUser.email, emailVerificationToken);
+                res.status(201).json({ user_id: result.insertId, ...newUser });
               }
             }
           );
@@ -223,13 +244,13 @@ apiRoute.post(async (req, res) => {
             res.status(500).json({
               message: "Une erreur s'est produite lors de la connexion.",
             });
-          } else if (results.length === 0) {
+          } else if (results.rowCount === 0) {
             res.status(401).json({
               message: "L'adresse e-mail ou le mot de passe est incorrect.",
             });
           } else {
-            //console.log(results[0]);
-            const user = results[0];
+            const user = results.rows[0];
+            // console.log(user);
             const passwordMatch = await bcrypt.compare(
               userPassword,
               user.password
@@ -238,12 +259,12 @@ apiRoute.post(async (req, res) => {
               // Récupérer les utilisateurs suivis (following id)
               connection.query(
                 `
-                  SELECT uf.following_id
-                  FROM user_followers AS uf
-                  WHERE uf.follower_id = $1
-                `,
-                [user.userId],
-                (error, following) => {
+    SELECT uf.following_id
+    FROM user_followers AS uf
+    WHERE uf.follower_id = $1
+  `,
+                [user.user_id],
+                (error, followingResults) => {
                   if (error) {
                     res.status(500).json({
                       message:
@@ -255,12 +276,12 @@ apiRoute.post(async (req, res) => {
                   // Récupérer les followers (follower id)
                   connection.query(
                     `
-                      SELECT uf.follower_id
-                      FROM user_followers AS uf
-                      WHERE uf.following_id = $1
-                    `,
-                    [user.userId],
-                    (error, followers) => {
+        SELECT uf.follower_id
+        FROM user_followers AS uf
+        WHERE uf.following_id = $1
+      `,
+                    [user.user_id],
+                    (error, followersResults) => {
                       if (error) {
                         res.status(500).json({
                           message:
@@ -271,11 +292,16 @@ apiRoute.post(async (req, res) => {
 
                       const fullUser = {
                         ...user,
-                        following: following.map((item) => item.following_id),
-                        followers: followers.map((item) => item.follower_id),
+                        following: followingResults.rows.map(
+                          (item) => item.following_id
+                        ),
+                        followers: followersResults.rows.map(
+                          (item) => item.follower_id
+                        ),
                       };
 
                       const token = generateToken(fullUser); // Generate JWT token
+                      console.log(fullUser);
                       res.status(200).json({
                         user,
                         token, // Envoyer le token au client

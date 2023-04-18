@@ -19,10 +19,10 @@ export default function UserCard({
   const [isFollowing, setIsFollowing] = useState(false);
 
   const {
-    userId,
+    user_id,
     username,
-    displayName,
-    profilePictureUrl,
+    display_name,
+    profile_picture_url,
     userDescription,
     created_at,
     updated_at,
@@ -35,7 +35,7 @@ export default function UserCard({
 
   function checkIsFollowing() {
     const userIsFollowing = followers.some((follower) => {
-      return follower === loggedUser.userId;
+      return follower === loggedUser.user_id;
     });
 
     setIsFollowing(userIsFollowing);
@@ -43,7 +43,7 @@ export default function UserCard({
 
   const fetchUserFollowData = async () => {
     try {
-      const response = await fetch(`/api/users/followers?userId=${userId}`);
+      const response = await fetch(`/api/users/followers?user_id=${user_id}`);
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des données.");
       }
@@ -56,8 +56,8 @@ export default function UserCard({
   };
 
   async function toggleFollowUser() {
-    const followerId = loggedUser.userId;
-    const followingId = userId;
+    const followerId = loggedUser.user_id;
+    const followingId = user_id;
     const url = "/api/users/followers";
     const requestOptions = {
       method: "POST",
@@ -103,23 +103,23 @@ export default function UserCard({
               <Link href={`/@${username}`} className={styles.userProfile}>
                 <Image
                   className={styles.profilePicture}
-                  src={profilePictureUrl}
-                  alt={`${displayName}'s profile`}
+                  src={profile_picture_url}
+                  alt={`${display_name}'s profile`}
                   height={32}
                   width={32}
                 />
               </Link>
               <div className={styles.userInfo}>
                 <Link href={`/@${username}`}>
-                  <h3 className={styles.displayName}>{displayName}</h3>
+                  <h3 className={styles.displayName}>{display_name}</h3>
                   <p className={styles.username}>@{username}</p>
                 </Link>
                 {displayDescription && <div>{userDescription}</div>}
               </div>
             </div>
 
-            {loggedUser.userId &&
-              loggedUser.userId !== userId &&
+            {loggedUser.user_id &&
+              loggedUser.user_id !== user_id &&
               displayStats && (
                 <button
                   className={styles.followButton}
@@ -145,8 +145,8 @@ export default function UserCard({
 
       {displayStats && (
         <>
-          {loggedUser.userId &&
-            loggedUser.userId !== userId &&
+          {loggedUser.user_id &&
+            loggedUser.user_id !== user_id &&
             !displayUserInfo && (
               <button
                 className={styles.followButton}

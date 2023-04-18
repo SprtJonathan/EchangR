@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 export default function generateToken(user) {
   // Define the data to be encoded in the token
   const data = {
-    userId: user.userId,
+    user_id: user.user_id,
     username: user.username,
-    displayName: user.displayName,
+    displayName: user.display_name,
     email: user.email,
-    roleId: user.roleId,
-    profilePictureUrl: user.profilePictureUrl,
+    role_id: user.role_id,
+    profile_picture_url: user.profile_picture_url,
     following: user.following,
     followers: user.followers,
   };

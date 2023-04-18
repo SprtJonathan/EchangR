@@ -4,7 +4,7 @@ import socket from "./socket";
 
 import styles from "./Conversation.module.css";
 
-const Conversation = ({ conversation, userId, closeConversation }) => {
+const Conversation = ({ conversation, user_id, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   
@@ -82,10 +82,10 @@ const Conversation = ({ conversation, userId, closeConversation }) => {
     socket.on("newMessage", (newMessage) => {
       // Vérifier si le message appartient à la conversation actuelle
       if (
-        (newMessage.sender_id === userId &&
-          newMessage.recipient_id === conversation.userId) ||
-        (newMessage.sender_id === conversation.userId &&
-          newMessage.recipient_id === userId)
+        (newMessage.sender_id === user_id &&
+          newMessage.recipient_id === conversation.user_id) ||
+        (newMessage.sender_id === conversation.user_id &&
+          newMessage.recipient_id === user_id)
       ) {
         // Ajouter le nouveau message à la liste des messages
         setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -96,7 +96,7 @@ const Conversation = ({ conversation, userId, closeConversation }) => {
     return () => {
       socket.off("newMessage");
     };
-  }, [socket, userId, conversation]);
+  }, [socket, user_id, conversation]);
 
   useEffect(() => {
     scrollToBottom();
@@ -109,8 +109,8 @@ const Conversation = ({ conversation, userId, closeConversation }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        sender_id: userId,
-        recipient_id: conversation.userId,
+        sender_id: user_id,
+        recipient_id: conversation.user_id,
         message,
         sent_date: new Date(),
       }),
@@ -135,7 +135,7 @@ const Conversation = ({ conversation, userId, closeConversation }) => {
         </button>
         <div className={styles.conversationProfile}>
           <Image
-            src={conversation.profilePictureUrl}
+            src={conversation.profile_picture_url}
             height={32}
             width={32}
             className={styles.conversationPic}
@@ -156,13 +156,13 @@ const Conversation = ({ conversation, userId, closeConversation }) => {
             <div
               key={msg.message_id}
               className={`${styles.message} ${
-                msg.sender_id === userId ? styles.loggedUser : ""
+                msg.sender_id === user_id ? styles.loggedUser : ""
               }`}
               ref={isLastMessage ? lastMessageRef : null}
             >
               <div className={styles.messageHeader}>
                 <strong>
-                  {msg.sender_id === userId ? "Vous" : conversation.displayName}
+                  {msg.sender_id === user_id ? "Vous" : conversation.displayName}
                   :
                 </strong>
                 <span>{msgDate}</span>

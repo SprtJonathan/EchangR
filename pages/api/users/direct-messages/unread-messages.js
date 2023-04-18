@@ -11,9 +11,9 @@ const apiRoute = nextConnect({
 
 // Get unread messages
 apiRoute.get(async (req, res) => {
-  const { userId } = req.query;
+  const { user_id } = req.query;
 
-  if (!userId) {
+  if (!user_id) {
     res.status(400).json({
       message: "Veuillez fournir un identifiant d'utilisateur valide.",
     });
@@ -28,7 +28,7 @@ apiRoute.get(async (req, res) => {
 
   connection.query(
     `
-        SELECT dm.senderId, dm.recipientId, dm.message, dm.created_at
+        SELECT dm.sender_id, dm.recipient_id, dm.message, dm.created_at
         FROM direct_messages AS dm
         INNER JOIN (
           SELECT conversation_id, MIN(id) AS min_id
@@ -38,7 +38,7 @@ apiRoute.get(async (req, res) => {
         ) AS um
         ON dm.id = um.min_id
       `,
-    [userId],
+    [user_id],
     (error, results) => {
       if (error) {
         res.status(500).json({
@@ -54,10 +54,10 @@ apiRoute.get(async (req, res) => {
 
 // Delete unread messages
 apiRoute.delete(async (req, res) => {
-  const { userId } = req.query;
+  const { user_id } = req.query;
   const { messageId } = req.params;
 
-  if (!userId || !messageId) {
+  if (!user_id || !messageId) {
     res.status(400).json({
       message:
         "Veuillez fournir un identifiant d'utilisateur et un identifiant de message valides.",
@@ -73,7 +73,7 @@ apiRoute.delete(async (req, res) => {
 
   connection.query(
     "DELETE FROM unread_messages WHERE user_id = $1 AND message_id = $2",
-    [userId, messageId],
+    [user_id, messageId],
     (error, result) => {
       if (error) {
         res.status(500).json({

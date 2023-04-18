@@ -32,23 +32,23 @@ function getLoggedUser() {
   useEffect(() => {
     if (userData) {
       const {
-        userId,
+        user_id,
         username,
         displayName,
         email,
-        roleId,
-        profilePictureUrl,
+        role_id,
+        profile_picture_url,
         following,
         followers,
       } = userData;
       store.dispatch(
         setUser({
-          userId,
+          user_id,
           username,
           displayName,
           email,
-          roleId,
-          profilePictureUrl,
+          role_id,
+          profile_picture_url,
           following,
           followers,
         })

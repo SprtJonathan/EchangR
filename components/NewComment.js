@@ -39,7 +39,7 @@ function NewComment({ postId, onCommentSubmit }) {
 
   const loggedUser = useSelector((state) => state.user);
 
-  return loggedUser.userId ? (
+  return loggedUser.user_id ? (
     <form className={styles.addCommentContainer} onSubmit={handleSubmit}>
       <textarea
         className={styles.addCommentText}

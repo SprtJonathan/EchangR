@@ -32,7 +32,7 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
   }, []);
 
   async function fetchAuthorData() {
-    const res = await fetch(`/api/users?userId=${comment.authorId}`, {});
+    const res = await fetch(`/api/users?user_id=${comment.author_id}`, {});
     const data = await res.json();
     setAuthorData(data);
   }
@@ -78,7 +78,7 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
             <Image
               priority
               className={utilStyles.profilePicture}
-              src={authorData.profilePictureUrl}
+              src={authorData.profile_picture_url}
               height={32}
               width={32}
               alt={"Logo de " + authorData.username}
@@ -94,7 +94,7 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
           </div>
         </div>
         <div>
-          {loggedUser.userId === comment.authorId && (
+          {loggedUser.user_id === comment.author_id && (
             <SelectMenuButton
               stylesFile="SelectMenuButtonAlt"
               toggleText="⋮"

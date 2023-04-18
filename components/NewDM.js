@@ -19,7 +19,7 @@ const NewDirectMessage = ({ senderId }) => {
       return;
     }
     const recipient = await recipientResponse.json();
-    const recipientId = recipient.userId;
+    const recipientId = recipient.user_id;
 
     const response = await fetch("/api/users/direct-messages", {
       method: "POST",

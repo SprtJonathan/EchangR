@@ -4,8 +4,8 @@ import connection from "../../../db.js";
 const handler = nextConnect();
 
 handler.get(async (req, res) => {
-  const { userId } = req.query;
-  if (!userId || isNaN(parseInt(userId))) {
+  const { user_id } = req.query;
+  if (!user_id || isNaN(parseInt(user_id))) {
     res.status(400).json({ message: "User ID invalide." });
     return;
   }
@@ -19,7 +19,7 @@ handler.get(async (req, res) => {
       FROM user_followers AS uf
       WHERE uf.follower_id = $1
     `,
-      [userId],
+      [user_id],
       (error, followingResults) => {
         if (error) {
           console.error(error);
@@ -37,7 +37,7 @@ handler.get(async (req, res) => {
           FROM user_followers AS uf
           WHERE uf.following_id = $1
         `,
-          [userId],
+          [user_id],
           (error, followersResults) => {
             if (error) {
               console.error(error);

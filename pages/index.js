@@ -28,11 +28,11 @@ export default function Home() {
   const loggedUser = useSelector((state) => state.user);
 
   async function fetchAuthorData(posts) {
-    const authorIds = posts.map((post) => post.authorId);
+    const authorIds = posts.map((post) => post.author_id);
 
     // Fetch author data for each post
-    const authorPromises = authorIds.map((authorId) =>
-      fetch(`/api/users?userId=${authorId}`).then((res) => res.json())
+    const authorPromises = authorIds.map((author_id) =>
+      fetch(`/api/users?user_id=${author_id}`).then((res) => res.json())
     );
 
     const authors = await Promise.all(authorPromises);
@@ -44,6 +44,8 @@ export default function Home() {
         author: authors[index],
       };
     });
+
+    console.log(postsWithAuthor);
 
     return postsWithAuthor;
   }
@@ -137,6 +139,8 @@ export default function Home() {
   }, [loadingRef, fetchData]);
 
   const filteredPosts = posts;
+
+  console.log(posts)
 
   function sortPosts(postsToSort, option) {
     switch (option) {
@@ -259,7 +263,7 @@ export default function Home() {
           </>
         )}
 
-        {loggedUser.userId && (
+        {loggedUser.user_id && (
           <div className={styles.newPost}>
             <button
               onClick={() => setDisplayNewPostModal(true)}

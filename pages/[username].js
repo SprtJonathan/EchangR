@@ -18,11 +18,11 @@ const UserProfile = () => {
   const [noMorePosts, setNoMorePosts] = useState(false);
 
   async function fetchAuthorData(posts) {
-    const authorIds = posts.map((post) => post.authorId);
+    const authorIds = posts.map((post) => post.author_id);
 
     // Fetch author data for each post
-    const authorPromises = authorIds.map((authorId) =>
-      fetch(`/api/users?userId=${authorId}`).then((res) => res.json())
+    const authorPromises = authorIds.map((author_id) =>
+      fetch(`/api/users?user_id=${author_id}`).then((res) => res.json())
     );
 
     const authors = await Promise.all(authorPromises);
@@ -38,13 +38,13 @@ const UserProfile = () => {
     return postsWithAuthor;
   }
 
-  async function fetchData(userId, loadMore = false) {
+  async function fetchData(user_id, loadMore = false) {
     try {
       const offset = loadMore ? posts.length : 0;
       const limit = 5;
-      // Utilisez l'ID utilisateur passé en paramètre au lieu de user.userId
+      // Utilisez l'ID utilisateur passé en paramètre au lieu de user.user_id
       let baseApiUrl = `/api/posts?`;
-      let params = `userId=${userId}`;
+      let params = `user_id=${user_id}`;
       let limitsUrl = `limit=${limit}&offset=${offset}`;
       const postApiUrl = baseApiUrl + params + limitsUrl;
       const res = await fetch(postApiUrl);
@@ -84,7 +84,7 @@ const UserProfile = () => {
         document.documentElement.offsetHeight &&
       !noMorePosts
     ) {
-      fetchData(user.userId, true); // Passez l'ID utilisateur de user en premier paramètre
+      fetchData(user.user_id, true); // Passez l'ID utilisateur de user en premier paramètre
     }
   }
 
@@ -106,8 +106,8 @@ const UserProfile = () => {
 
       // Appelez la fonction fetchData après avoir défini user, uniquement si data existe
       if (data) {
-        // Passez data.userId comme argument à fetchData
-        fetchData(data.userId);
+        // Passez data.user_id comme argument à fetchData
+        fetchData(data.user_id);
       }
     }
 
@@ -127,7 +127,7 @@ const UserProfile = () => {
             displayStats={false}
             displayDescription={false}
           />
-          {/* {user.userId == loggedUser.userId && <div>CKILEPATRON</div>} */}
+          {/* {user.user_id == loggedUser.user_id && <div>CKILEPATRON</div>} */}
           <UserCard user={user} displayUserInfo={false} displayStats={false} />
           <UserCard
             user={user}

@@ -102,7 +102,7 @@ export default function Header({ home, setSearchQuery }) {
           </form>
         </div>
       )}
-      {loggedUser.userId ? (
+      {loggedUser.user_id ? (
         <>
           <section className={styles.userButtons}>
             <div className={styles.DMCenter}>

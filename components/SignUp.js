@@ -24,6 +24,7 @@ export default function SignUp() {
         `/api/users/check-username?username=${username.toLocaleLowerCase()}`
       );
       const data = await response.json();
+      console.log(data)
 
       if (data.available === false) {
         setMessage("Ce nom d'utilisateur est déjà pris.");

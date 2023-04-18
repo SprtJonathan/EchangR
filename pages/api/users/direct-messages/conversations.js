@@ -10,9 +10,9 @@ const apiRoute = nextConnect({
 });
 
 apiRoute.get(async (req, res) => {
-  const { userId } = req.query;
+  const { user_id } = req.query;
 
-  if (!userId) {
+  if (!user_id) {
     res.status(400).json({
       message: "Veuillez fournir un identifiant d'utilisateur valide.",
     });
@@ -27,10 +27,10 @@ apiRoute.get(async (req, res) => {
 
   const sql = `
   SELECT
-  u.userId, u.username, u.displayName, u.profilePictureUrl,
+  u.user_id, u.username, u.display_name, u.profile_picture_url,
   dm.message_id, dm.sender_id, dm.recipient_id, dm.message, dm.sent_date
 FROM users AS u
-JOIN direct_messages AS dm ON (u.userId = dm.sender_id OR u.userId = dm.recipient_id)
+JOIN direct_messages AS dm ON (u.user_id = dm.sender_id OR u.user_id = dm.recipient_id)
 JOIN (
   SELECT
     MAX(message_id) AS last_message_id
@@ -38,12 +38,12 @@ JOIN (
   WHERE sender_id = $1 OR recipient_id = $1
   GROUP BY LEAST(sender_id, recipient_id), GREATEST(sender_id, recipient_id)
 ) AS last_messages ON dm.message_id = last_messages.last_message_id
-WHERE (dm.sender_id = $1 OR dm.recipient_id = $1) AND u.userId != $1
+WHERE (dm.sender_id = $1 OR dm.recipient_id = $1) AND u.user_id != $1
 ORDER BY dm.sent_date DESC;
 
       `;
 
-  connection.query(sql, [userId], (error, results) => {
+  connection.query(sql, [user_id], (error, results) => {
     if (error) {
       res.status(500).json({
         message:

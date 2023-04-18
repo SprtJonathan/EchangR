@@ -7,14 +7,14 @@ import socket from "./socket";
 
 import styles from "./Inbox.module.css";
 
-const Inbox = ({ userId, closeInbox }) => {
+const Inbox = ({ user_id, closeInbox }) => {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch(`/api/users/direct-messages/conversations?userId=${userId}`, {
+    fetch(`/api/users/direct-messages/conversations?user_id=${user_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +27,7 @@ const Inbox = ({ userId, closeInbox }) => {
         console.log(data);
         setConversations(data);
       });
-  }, [userId]);
+  }, [user_id]);
 
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
@@ -37,7 +37,7 @@ const Inbox = ({ userId, closeInbox }) => {
     // Écouter les nouveaux messages
     socket.on("newMessage", (newMessage) => {
       // Mettre à jour la liste des conversations
-      fetch(`/api/users/direct-messages/conversations?userId=${userId}`, {
+      fetch(`/api/users/direct-messages/conversations?user_id=${user_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -54,7 +54,7 @@ const Inbox = ({ userId, closeInbox }) => {
     return () => {
       socket.off("newMessage");
     };
-  }, [userId, socket]);
+  }, [user_id, socket]);
 
   return (
     <div className={styles.inbox}>
@@ -65,12 +65,12 @@ const Inbox = ({ userId, closeInbox }) => {
       {selectedConversation ? (
         <Conversation
           conversation={selectedConversation}
-          userId={userId}
+          user_id={user_id}
           closeConversation={() => setSelectedConversation(null)}
         />
       ) : (
         <>
-          <NewDM senderId={userId} />
+          <NewDM senderId={user_id} />
           <div className={styles.conversationsList}>
             {conversations.map((conversation) => (
               <ConversationsList

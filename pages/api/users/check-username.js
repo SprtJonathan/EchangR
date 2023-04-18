@@ -19,13 +19,21 @@ apiRoute.get(async (req, res) => {
     connection.query(
       "SELECT COUNT(*) AS count FROM users WHERE username = $1",
       [username],
-      (error, results) => {
+      (error, result) => {
         if (error) {
           res.status(500).json({
             message: "Erreur lors de la vérification du nom d'utilisateur.",
           });
         } else {
-          res.status(200).json({ available: results[0].count === 0 });
+          const results = result.rows;
+          if (results && results[0]) {
+            res.status(200).json({ available: results[0].count === "0" });
+          } else {
+            res.status(500).json({
+              message:
+                "Erreur lors de la récupération du résultat de la requête.",
+            });
+          }
         }
       }
     );

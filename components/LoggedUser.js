@@ -10,7 +10,7 @@ export default function LoggedUser() {
     <div className={styles.wrapper}>
       <Image
         className={utilStyles.profilePicture}
-        src={loggedUser.profilePictureUrl}
+        src={loggedUser.profile_picture_url}
         height={32}
         width={32}
         alt={"Logo de " + loggedUser.username}

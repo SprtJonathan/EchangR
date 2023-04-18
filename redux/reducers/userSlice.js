@@ -3,43 +3,43 @@ import { createSlice } from "@reduxjs/toolkit";
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    userId: null,
+    user_id: null,
     username: "",
     displayName: "",
     email: "",
-    roleId: "",
-    profilePictureUrl: "",
+    role_id: "",
+    profile_picture_url: "",
     following: "",
     followers: "",
   },
   reducers: {
     setUser: (state, action) => {
       const {
-        userId,
+        user_id,
         username,
         displayName,
         email,
-        roleId,
-        profilePictureUrl,
+        role_id,
+        profile_picture_url,
         following,
         followers,
       } = action.payload;
-      state.userId = userId;
+      state.user_id = user_id;
       state.username = username;
       state.displayName = displayName;
       state.email = email;
-      state.roleId = roleId;
-      state.profilePictureUrl = profilePictureUrl;
+      state.role_id = role_id;
+      state.profile_picture_url = profile_picture_url;
       state.following = following;
       state.followers = followers;
     },
     clearUser: (state) => {
-      state.userId = null;
+      state.user_id = null;
       state.username = "";
       state.displayName = "";
       state.email = "";
-      state.roleId = "";
-      state.profilePictureUrl = "";
+      state.role_id = "";
+      state.profile_picture_url = "";
       state.following = "";
       state.followers = "";
     },

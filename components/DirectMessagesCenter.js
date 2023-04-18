@@ -14,7 +14,7 @@ export default function DirectMessagesCenter() {
       {!displayInbox ? (
         <div className={styles.displayMessagesButton} onClick={() => setDisplayInbox(true)}>Messages</div>
       ) : (
-        <Inbox userId={loggedUser.userId} closeInbox={setDisplayInbox} />
+        <Inbox user_id={loggedUser.user_id} closeInbox={setDisplayInbox} />
       )}
     </div>
   );

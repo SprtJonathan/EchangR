@@ -34,7 +34,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
   const description = props.description;
   const attachment = props.attachment;
   const tags = JSON.parse(props.tags);
-  const authorId = props.authorId;
+  const author_id = props.author_id;
 
   const [dateToShow, setDateToShow] = useState(getTimeSincePost(date, true)); // Initialiser la valeur de dateToShow avec la date formatée en "x temps depuis"
   const [dateCountdownFormat, setDateCountdownFormat] = useState(true);
@@ -57,9 +57,11 @@ export default function Post({ props, refreshPosts, onTagClick }) {
 
   const loggedUser = useSelector((state) => state.user);
 
-  const post = { id: id, authorId: authorId };
+  const post = { id: id, author_id: author_id };
   const attachments = JSON.parse(attachment);
   // console.log(attachments);
+
+  console.log(post);
 
   /**
    * It fetches the reactions for a post and sets the state of the postReactions to the data returned
@@ -79,7 +81,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
    * It fetches data from the server and sets the data to the state.
    */
   async function fetchAuthorData() {
-    const res = await fetch(`/api/users?userId=${authorId}`, {});
+    const res = await fetch(`/api/users?user_id=${author_id}`, {});
     const data = await res.json();
     setAuthorData(data);
   }
@@ -132,7 +134,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
     if (token) {
       try {
         const response = await fetch(
-          `/api/posts?id=${post.id}&authorId=${post.authorId}`,
+          `/api/posts?id=${post.id}&author_id=${post.author_id}`,
           {
             method: "DELETE",
             headers: {
@@ -304,7 +306,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
                   >
                     Partager
                   </button>
-                  {loggedUser.userId == authorId && (
+                  {loggedUser.user_id == author_id && (
                     <button
                       onClick={() => setConfirmDelete(true)}
                       className={styles.delete}
@@ -315,7 +317,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
                 </>
               }
             />
-            {loggedUser.userId == authorId && confirmDelete && (
+            {loggedUser.user_id == author_id && confirmDelete && (
               <div
                 className={styles.confirmModalWrapper}
                 onClick={() => setConfirmDelete(false)}
@@ -361,7 +363,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
                   <Image
                     priority
                     className={utilStyles.profilePicture}
-                    src={authorData.profilePictureUrl}
+                    src={authorData.profile_picture_url}
                     height={32}
                     width={32}
                     alt={"Logo de " + authorData.username}
@@ -495,7 +497,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
             )}
 
             {(!postReactions || postReactions.length < 10) &&
-            loggedUser.userId ? (
+            loggedUser.user_id ? (
               <>
                 <button
                   className={styles.reactionButton}

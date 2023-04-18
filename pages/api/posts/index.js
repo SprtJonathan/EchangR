@@ -79,7 +79,7 @@ apiRoute.use(uploadMiddleware);
 
 apiRoute.get(async (req, res) => {
   const postId = req.query.id;
-  const userId = req.query.userId;
+  const user_id = req.query.user_id;
   const searchQuery = req.query.searchQuery || "";
   const tagFilter = req.query.tagFilter || null;
   const limit = parseInt(req.query.limit) || 100;
@@ -87,53 +87,35 @@ apiRoute.get(async (req, res) => {
 
   if (postId) {
     // Si un ID de post est fourni, récupérez uniquement ce post spécifique
-    connection.query(
+    const { rows } = await connection.query(
       "SELECT * FROM posts WHERE id = $1",
-      [postId],
-      function (error, results, fields) {
-        if (error) throw error;
-        res.status(200).json(results);
-      }
+      [postId]
     );
-  } else if (userId) {
-    // Si un userId est fourni, récupérez uniquement les posts dont le authorId == userId
-    connection.query(
-      "SELECT * FROM posts WHERE authorId = $1 ORDER BY date DESC LIMIT $2 OFFSET $3",
-      [userId, limit, offset],
-      function (error, results, fields) {
-        if (error) throw error;
-        res.status(200).json(results);
-      }
+    res.status(200).json(rows);
+  } else if (user_id) {
+    // Si un user_id est fourni, récupérez uniquement les posts dont le author_id == user_id
+    const { rows } = await connection.query(
+      "SELECT * FROM posts WHERE author_id = $1 ORDER BY date DESC LIMIT $2 OFFSET $3",
+      [user_id, limit, offset]
     );
+    res.status(200).json(rows);
   } else {
-    // Si aucun ID de post n'est fourni, récupérez tous les posts
-    // console.log(searchQuery);
-    console.log(tagFilter);
-    // console.log(limit);
-    // console.log(offset);
-
     const searchPattern = `%${searchQuery}%`;
 
-    connection.query(
-      `SELECT * FROM posts
-       WHERE ($1 IS NULL OR tags LIKE $2)
-       AND (title LIKE $3 OR description LIKE $3 OR "authorId" IN (
-         SELECT id FROM users WHERE username LIKE $3 OR "displayName" LIKE $3
-       ))
-       ORDER BY date DESC LIMIT $4 OFFSET $5`,
-      [
-        tagFilter,
-        tagFilter ? `%${tagFilter}%` : null,
-        searchPattern,
-        limit,
-        offset,
-      ],
-      function (error, results, fields) {
-        if (error) throw error;
-        console.log("Chargement des posts");
-        res.status(200).json(results);
-      }
-    );
+    let query = `
+      SELECT * FROM posts
+      WHERE (COALESCE($2, '') = '' OR tags LIKE $2)
+      AND (title LIKE $1 OR description LIKE $1 OR author_id IN (
+        SELECT id FROM users WHERE username LIKE $1 OR display_name LIKE $1
+      ))
+      ORDER BY date DESC LIMIT $3 OFFSET $4
+    `;
+
+    const tagPattern = tagFilter ? `%${tagFilter}%` : null;
+    const queryParams = [searchPattern, tagPattern, limit, offset];
+
+    const { rows } = await connection.query(query, queryParams);
+    res.status(200).json(rows);
   }
 });
 
@@ -148,7 +130,7 @@ apiRoute.post(async (req, res) => {
 
   try {
     const { title, description, tags } = req.body;
-    const authorId = authResult.user.userId;
+    const author_id = authResult.user.user_id;
     let attachments = req.files;
     let attachmentsPaths = [];
 
@@ -162,8 +144,8 @@ apiRoute.post(async (req, res) => {
     //console.log(tags);
 
     connection.query(
-      "INSERT INTO posts (title, description, attachment, tags, authorId) VALUES ($1, $2, $3, $4, $5)",
-      [title, description, JSON.stringify(attachmentsPaths), tags, authorId],
+      "INSERT INTO posts (title, description, attachment, tags, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [title, description, JSON.stringify(attachmentsPaths), tags, author_id],
       function (error, results, fields) {
         if (error) {
           console.error("Error inserting post into database:", error);
@@ -171,7 +153,7 @@ apiRoute.post(async (req, res) => {
           return;
         }
 
-        const postId = results.insertId;
+        const postId = results.rows[0].id;
 
         res.status(201).json({
           id: postId,
@@ -179,7 +161,7 @@ apiRoute.post(async (req, res) => {
           description,
           attachmentsPaths,
           tags,
-          authorId,
+          author_id,
         });
       }
     );
@@ -200,84 +182,49 @@ apiRoute.delete(async (req, res) => {
   }
 
   // Récupère l'ID du post à supprimer depuis les paramètres de l'URL
-  const authorId = req.query.authorId;
+  const author_id = req.query.author_id;
   const postId = req.query.id;
 
-  const { userId, roleId } = authResult.user;
+  const { user_id, role_id } = authResult.user;
 
-  if (userId == authorId || roleId > 0) {
-    connection.beginTransaction(async function (error) {
-      if (error) throw error;
+  if (user_id == author_id || role_id > 0) {
+    try {
+      await connection.query("BEGIN");
 
-      connection.query(
+      const { rows } = await connection.query(
         "SELECT attachment FROM posts WHERE id = $1",
-        [postId],
-        async function (error, results, fields) {
-          if (error) {
-            return connection.rollback(function () {
-              throw error;
-            });
-          }
-
-          const attachmentPaths = JSON.parse(results[0].attachment);
-
-          connection.query(
-            "DELETE FROM comments WHERE postId = $1",
-            [postId],
-            function (error, results, fields) {
-              if (error) {
-                return connection.rollback(function () {
-                  throw error;
-                });
-              }
-
-              connection.query(
-                "DELETE FROM reactions WHERE postId = $1",
-                [postId],
-                function (error, results, fields) {
-                  if (error) {
-                    return connection.rollback(function () {
-                      throw error;
-                    });
-                  }
-
-                  connection.query(
-                    "DELETE FROM posts WHERE id = $1",
-                    [postId],
-                    async function (error, results, fields) {
-                      if (error) {
-                        return connection.rollback(function () {
-                          throw error;
-                        });
-                      }
-
-                      connection.commit(async function (error) {
-                        if (error) {
-                          return connection.rollback(function () {
-                            throw error;
-                          });
-                        }
-
-                        if (attachmentPaths.length > 0) {
-                          for (const path of attachmentPaths) {
-                            const fullPath = `./public${path}`;
-                            await deleteImage(fullPath);
-                          }
-                        }
-
-                        res
-                          .status(200)
-                          .json({ message: "Post supprimé avec succès !" });
-                      });
-                    }
-                  );
-                }
-              );
-            }
-          );
-        }
+        [postId]
       );
-    });
+
+      const attachmentPaths = JSON.parse(rows[0].attachment);
+
+      await connection.query("DELETE FROM comments WHERE post_id = $1", [
+        postId,
+      ]);
+
+      await connection.query("DELETE FROM reactions WHERE post_id = $1", [
+        postId,
+      ]);
+
+      await connection.query("DELETE FROM posts WHERE id = $1", [postId]);
+
+      await connection.query("COMMIT");
+
+      if (attachmentPaths.length > 0) {
+        for (const path of attachmentPaths) {
+          const fullPath = `./public${path}`;
+          await deleteImage(fullPath);
+        }
+      }
+
+      res.status(200).json({ message: "Post supprimé avec succès !" });
+    } catch (error) {
+      await connection.query("ROLLBACK");
+      console.error("Erreur lors de la suppression du post:", error);
+      res
+        .status(500)
+        .json({ message: "Erreur lors de la suppression du post" });
+    }
   } else {
     res.status(403).json({ message: "Suppression refusée" });
   }

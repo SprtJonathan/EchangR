@@ -18,14 +18,14 @@ export default async function handler(req, res) {
     return;
   }
 
-  const userId = authResult.user?.userId;
+  const user_id = authResult.user?.user_id;
 
   switch (req.method) {
     case "GET": {
       const { postId } = req.query;
 
       connection.query(
-        "SELECT * FROM comments WHERE postId = $1",
+        "SELECT * FROM comments WHERE post_id = $1",
         [postId],
         (error, results, fields) => {
           if (error) throw error;
@@ -40,8 +40,8 @@ export default async function handler(req, res) {
       const { postId, comment } = req.body;
 
       connection.query(
-        "INSERT INTO comments (authorId, postId, comment) VALUES ($1, $2, $3)",
-        [userId, postId, comment],
+        "INSERT INTO comments (author_id, post_id, comment) VALUES ($1, $2, $3)",
+        [user_id, postId, comment],
         (error, results, fields) => {
           if (error) throw error;
           res.status(201).json({ message: "Comment added." });
@@ -55,8 +55,8 @@ export default async function handler(req, res) {
       const { commentId, comment } = req.body;
 
       connection.query(
-        "UPDATE comments SET comment = $1 WHERE commentId = $2 AND authorId = $3",
-        [comment, commentId, userId],
+        "UPDATE comments SET comment = $1 WHERE comment_id = $2 AND author_id = $3",
+        [comment, commentId, user_id],
         (error, results, fields) => {
           if (error) throw error;
           if (results.affectedRows > 0) {
@@ -76,16 +76,16 @@ export default async function handler(req, res) {
       const { commentId } = req.body;
 
       connection.query(
-        "SELECT * FROM comments WHERE commentId = $1",
+        "SELECT * FROM comments WHERE comment_id = $1",
         [commentId],
         (error, results, fields) => {
           if (error) throw error;
 
           if (results.length > 0) {
             const comment = results[0];
-            if (comment.authorId === userId || roleId > 0) {
+            if (comment.author_id === user_id || role_id > 0) {
               connection.query(
-                "DELETE FROM comments WHERE commentId = $1",
+                "DELETE FROM comments WHERE comment_id = $1",
                 [commentId],
                 (error, results, fields) => {
                   if (error) throw error;
