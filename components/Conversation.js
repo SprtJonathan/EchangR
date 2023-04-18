@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import socket from "./socket";
+import { io } from "socket.io-client";
+const socket = io("/api/socket");
 
 import styles from "./Conversation.module.css";
 
 const Conversation = ({ conversation, user_id, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  
+
   const token = localStorage.getItem("token");
 
   const lastMessageRef = useRef(null);
@@ -162,7 +163,9 @@ const Conversation = ({ conversation, user_id, closeConversation }) => {
             >
               <div className={styles.messageHeader}>
                 <strong>
-                  {msg.sender_id === user_id ? "Vous" : conversation.displayName}
+                  {msg.sender_id === user_id
+                    ? "Vous"
+                    : conversation.displayName}
                   :
                 </strong>
                 <span>{msgDate}</span>
