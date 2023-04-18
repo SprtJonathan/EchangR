@@ -93,6 +93,7 @@ const Conversation = ({ conversation, user_id, closeConversation }) => {
   }, []);
 
   useEffect(() => {
+    if (!socket) return;
     // Écouter les nouveaux messages
     socket.on("newMessage", (newMessage) => {
       // Vérifier si le message appartient à la conversation actuelle
@@ -164,8 +165,7 @@ const Conversation = ({ conversation, user_id, closeConversation }) => {
         <div></div>
       </div>
       <div className={styles.conversationMessages}>
-        {Array.isArray(messages) &&
-        messages.length > 0 ? (
+        {Array.isArray(messages) && messages.length > 0 ? (
           messages.map((msg, index) => {
             const msgDate = formatDate(msg.sent_date);
             const isLastMessage = index === messages.length - 1;
