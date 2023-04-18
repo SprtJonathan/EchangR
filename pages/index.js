@@ -140,7 +140,7 @@ export default function Home() {
 
   const filteredPosts = posts;
 
-  console.log(posts)
+  console.log(posts);
 
   function sortPosts(postsToSort, option) {
     switch (option) {
@@ -241,7 +241,8 @@ export default function Home() {
           <SelectMenuButton toggleText={`Trier par`} content={sortByOptions} />
         </aside>
 
-        {sortedFilteredPosts.length > 0 ? (
+        {Array.isArray(sortedFilteredPosts) &&
+        sortedFilteredPosts.length > 0 ? (
           sortedFilteredPosts.map((post) => (
             <Post
               key={post.id}
