@@ -1,6 +1,5 @@
 import { Server } from "ws";
 import { createServer } from "http";
-import { NextApiResponse, NextApiRequest } from "next";
 
 let server;
 
