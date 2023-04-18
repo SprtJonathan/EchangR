@@ -62,24 +62,32 @@ const Inbox = ({ user_id, closeInbox }) => {
         <h2>Boîte de réception</h2>{" "}
         <button onClick={() => closeInbox(false)}>X</button>
       </div>
-      {selectedConversation ? (
-        <Conversation
-          conversation={selectedConversation}
-          user_id={user_id}
-          closeConversation={() => setSelectedConversation(null)}
-        />
+      {Array.isArray(selectedConversation) &&
+      selectedConversation.length > 0 ? (
+        selectedConversation ? (
+          <Conversation
+            conversation={selectedConversation}
+            user_id={user_id}
+            closeConversation={() => setSelectedConversation(null)}
+          />
+        ) : (
+          <>
+            <NewDM senderId={user_id} />
+            <div className={styles.conversationsList}>
+              {conversations.map((conversation) => (
+                <ConversationsList
+                  key={conversation.message_id}
+                  conversation={conversation}
+                  onSelectConversation={handleSelectConversation}
+                />
+              ))}
+            </div>
+          </>
+        )
       ) : (
         <>
           <NewDM senderId={user_id} />
-          <div className={styles.conversationsList}>
-            {conversations.map((conversation) => (
-              <ConversationsList
-                key={conversation.message_id}
-                conversation={conversation}
-                onSelectConversation={handleSelectConversation}
-              />
-            ))}
-          </div>
+          <div>Aucune conversation</div>
         </>
       )}
     </div>

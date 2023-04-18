@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { io } from "socket.io-client";
-const socket = io("/api/socket");
 
 import styles from "./Conversation.module.css";
 
 const Conversation = ({ conversation, user_id, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const [socket, setSocket] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -76,6 +75,21 @@ const Conversation = ({ conversation, user_id, closeConversation }) => {
   useEffect(() => {
     // Récupérer les messages précédents de l'API
     fetchMessages();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const newSocket = new WebSocket(
+        `${location.protocol === "https:" ? "wss://" : "ws://"}${
+          location.host
+        }/api/socket`
+      );
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.close();
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -150,30 +164,35 @@ const Conversation = ({ conversation, user_id, closeConversation }) => {
         <div></div>
       </div>
       <div className={styles.conversationMessages}>
-        {messages.map((msg, index) => {
-          const msgDate = formatDate(msg.sent_date);
-          const isLastMessage = index === messages.length - 1;
-          return (
-            <div
-              key={msg.message_id}
-              className={`${styles.message} ${
-                msg.sender_id === user_id ? styles.loggedUser : ""
-              }`}
-              ref={isLastMessage ? lastMessageRef : null}
-            >
-              <div className={styles.messageHeader}>
-                <strong>
-                  {msg.sender_id === user_id
-                    ? "Vous"
-                    : conversation.displayName}
-                  :
-                </strong>
-                <span>{msgDate}</span>
+        {Array.isArray(messages) &&
+        messages.length > 0 ? (
+          messages.map((msg, index) => {
+            const msgDate = formatDate(msg.sent_date);
+            const isLastMessage = index === messages.length - 1;
+            return (
+              <div
+                key={msg.message_id}
+                className={`${styles.message} ${
+                  msg.sender_id === user_id ? styles.loggedUser : ""
+                }`}
+                ref={isLastMessage ? lastMessageRef : null}
+              >
+                <div className={styles.messageHeader}>
+                  <strong>
+                    {msg.sender_id === user_id
+                      ? "Vous"
+                      : conversation.displayName}
+                    :
+                  </strong>
+                  <span>{msgDate}</span>
+                </div>
+                <p className={styles.messageContent}>{msg.message}</p>
               </div>
-              <p className={styles.messageContent}>{msg.message}</p>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div>Aucun message</div>
+        )}
       </div>
       <form onSubmit={sendMessage} className={styles.form}>
         <input

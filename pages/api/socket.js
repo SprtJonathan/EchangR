@@ -1,22 +1,57 @@
-import { createSocketIOMiddleware } from "next-socket.io";
+import { Server } from "ws";
+import { createServer } from "http";
+import { NextApiResponse, NextApiRequest } from "next";
 
-const handleConnection = (socket) => {
-  console.log("User connected");
+let server;
 
-  socket.on("sendMessage", (newMessage) => {
-    socket.broadcast.emit("newMessage", newMessage);
+function createWebSocketServer(handler) {
+  const httpServer = createServer((req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+    res.setHeader("Access-Control-Allow-Headers", "content-type");
+    res.writeHead(200);
+    res.end();
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
-};
+  const wsServer = new Server({ server: httpServer });
 
-const config = {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-};
+  wsServer.on("connection", handler);
 
-export default createSocketIOMiddleware(handleConnection, config);
+  return httpServer;
+}
+
+export default async function handler(req, res) {
+  if (!server) {
+    server = createWebSocketServer((socket) => {
+      console.log("User connected");
+
+      socket.on("message", (data) => {
+        const newMessage = JSON.parse(data);
+        console.log("Received:", newMessage);
+        socket.send(
+          JSON.stringify({ type: "newMessage", payload: newMessage })
+        );
+      });
+
+      socket.on("close", () => {
+        console.log("User disconnected");
+      });
+    });
+  }
+
+  if (req.method === "GET") {
+    return new Promise((resolve, reject) => {
+      server.on("request", (request, response) => {
+        if (request.url === req.url) {
+          response.writeHead(200);
+          response.end();
+          resolve();
+        }
+      });
+
+      server.emit("request", req, res);
+    });
+  } else {
+    res.status(405).end(); // Method Not Allowed
+  }
+}
