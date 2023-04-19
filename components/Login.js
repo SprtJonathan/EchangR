@@ -16,9 +16,15 @@ export default function Login() {
     formData.append("action", "login");
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/login", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
       });
 
       if (!response.ok) {

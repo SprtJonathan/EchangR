@@ -1,10 +1,12 @@
 import nextConnect from "next-connect";
 import connection from "../../../db.js";
+import isAuthenticated from "../auth/isAuthenticated";
 
 const handler = nextConnect();
 
 handler.get(async (req, res) => {
   const { user_id } = req.query;
+
   if (!user_id || isNaN(parseInt(user_id))) {
     res.status(400).json({ message: "User ID invalide." });
     return;
@@ -63,9 +65,15 @@ handler.get(async (req, res) => {
 });
 
 handler.post(async (req, res) => {
-  const { followerId, followingId } = req.body;
+  const { follower_id, following_id } = req.body;
 
-  if (!followerId || !followingId) {
+  const auth = await isAuthenticated(req);
+
+  if (!auth.isAuthenticated) {
+    return res.status(401).json({ message: auth.message });
+  }
+
+  if (!follower_id || !following_id) {
     res.status(400).json({ message: "Follower ID ou Following ID manquant." });
     return;
   }
@@ -76,7 +84,7 @@ handler.post(async (req, res) => {
       SELECT * FROM user_followers
       WHERE follower_id = $1 AND following_id = $2
     `,
-      [followerId, followingId],
+      [follower_id, following_id],
       (error, results) => {
         if (error) {
           res
@@ -92,7 +100,7 @@ handler.post(async (req, res) => {
             DELETE FROM user_followers
             WHERE follower_id = $1 AND following_id = $2
           `,
-            [followerId, followingId],
+            [follower_id, following_id],
             (error) => {
               if (error) {
                 res
@@ -110,7 +118,7 @@ handler.post(async (req, res) => {
             INSERT INTO user_followers (follower_id, following_id)
             VALUES ($1, $2)
           `,
-            [followerId, followingId],
+            [follower_id, following_id],
             (error) => {
               if (error) {
                 res

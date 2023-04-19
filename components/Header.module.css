@@ -26,6 +26,10 @@
   flex-wrap: wrap;
 }
 
+.websiteLogo {
+  width: 64px;
+}
+
 .header a {
   color: #ffffff;
   text-decoration: none;

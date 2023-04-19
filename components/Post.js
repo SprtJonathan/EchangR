@@ -61,7 +61,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
   const attachments = JSON.parse(attachment);
   // console.log(attachments);
 
-  console.log(post);
+  //console.log(post);
 
   /**
    * It fetches the reactions for a post and sets the state of the postReactions to the data returned
@@ -81,7 +81,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
    * It fetches data from the server and sets the data to the state.
    */
   async function fetchAuthorData() {
-    const res = await fetch(`/api/users?user_id=${author_id}`, {});
+    const res = await fetch(`/api/users/id-${author_id}`, {});
     const data = await res.json();
     setAuthorData(data);
   }
@@ -459,8 +459,12 @@ export default function Post({ props, refreshPosts, onTagClick }) {
             {tags &&
               tags !== "" &&
               (Array.isArray(tags) ? (
-                tags.map((tag) => (
-                  <span className={styles.tags} onClick={() => onTagClick(tag)}>
+                tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className={styles.tags}
+                    onClick={() => onTagClick(tag)}
+                  >
                     {tag}
                   </span>
                 ))
@@ -471,8 +475,9 @@ export default function Post({ props, refreshPosts, onTagClick }) {
           <div className={styles.reactionsContainer}>
             {postReactions && Array.isArray(postReactions) ? (
               <>
-                {postReactions.map((reaction) => (
+                {postReactions.map((reaction, index) => (
                   <button
+                    key={index}
                     className={styles.reactionButton}
                     onClick={() => addReaction(reaction.emoji)}
                   >

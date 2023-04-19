@@ -48,39 +48,55 @@ export default function UserCard({
         throw new Error("Erreur lors de la récupération des données.");
       }
       const data = await response.json();
-      setFollowers(data.followers.map((follower) => follower.follower_id));
-      setFollowing(data.following.map((following) => following.following_id));
+      setFollowers(
+        Array.isArray(data)
+          ? data.followers.map((follower) => follower.follower_id)
+          : followers
+      );
+      setFollowing(
+        Array.isArray(data)
+          ? data.following.map((following) => following.following_id)
+          : following
+      );
     } catch (error) {
       console.error(error.message);
     }
+    console.log(following);
   };
 
   async function toggleFollowUser() {
-    const followerId = loggedUser.user_id;
-    const followingId = user_id;
-    const url = "/api/users/followers";
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ followerId, followingId }),
-    };
+    const token = localStorage.getItem("token");
+    if (token) {
+      const follower_id = loggedUser.user_id;
+      const following_id = user_id;
+      const url = "/api/users/followers";
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ follower_id, following_id }),
+      };
 
-    try {
-      const response = await fetch(url, requestOptions);
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
+      try {
+        const response = await fetch(url, requestOptions);
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message);
+        }
+
+        // Mettre à jour l'état isFollowing
+        fetchUserFollowData();
+
+        // Gérer d'autres mises à jour de l'interface utilisateur, par exemple mettre à jour la liste des followers
+      } catch (error) {
+        console.error(
+          "Erreur lors de la modification du suivi :",
+          error.message
+        );
+        // Gérer l'erreur, par exemple afficher un message d'erreur à l'utilisateur
       }
-
-      // Mettre à jour l'état isFollowing
-      fetchUserFollowData();
-
-      // Gérer d'autres mises à jour de l'interface utilisateur, par exemple mettre à jour la liste des followers
-    } catch (error) {
-      console.error("Erreur lors de la modification du suivi :", error.message);
-      // Gérer l'erreur, par exemple afficher un message d'erreur à l'utilisateur
     }
   }
 
@@ -105,8 +121,8 @@ export default function UserCard({
                   className={styles.profilePicture}
                   src={profile_picture_url}
                   alt={`${display_name}'s profile`}
-                  height={32}
-                  width={32}
+                  height={512}
+                  width={512}
                 />
               </Link>
               <div className={styles.userInfo}>

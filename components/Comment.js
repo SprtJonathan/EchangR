@@ -32,7 +32,7 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
   }, []);
 
   async function fetchAuthorData() {
-    const res = await fetch(`/api/users?user_id=${comment.author_id}`, {});
+    const res = await fetch(`/api/users/id-${comment.author_id}`, {});
     const data = await res.json();
     setAuthorData(data);
   }

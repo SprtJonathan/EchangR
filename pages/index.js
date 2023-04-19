@@ -32,7 +32,7 @@ export default function Home() {
 
     // Fetch author data for each post
     const authorPromises = authorIds.map((author_id) =>
-      fetch(`/api/users?user_id=${author_id}`).then((res) => res.json())
+      fetch(`/api/users/id-${author_id}`).then((res) => res.json())
     );
 
     const authors = await Promise.all(authorPromises);
@@ -303,11 +303,17 @@ export default function Home() {
           </>
         )}
       </section>
-      {!noMorePosts && loadingMore && (
-        <div ref={loadingRef} style={{ textAlign: "center", padding: "1rem" }}>
-          Chargement...
-        </div>
-      )}
+      {!noMorePosts &&
+        loadingMore &&
+        !Array.isArray(sortedFilteredPosts) &&
+        sortedFilteredPosts.length < 1 && (
+          <div
+            ref={loadingRef}
+            style={{ textAlign: "center", padding: "1rem" }}
+          >
+            Chargement...
+          </div>
+        )}
     </Layout>
   );
 }

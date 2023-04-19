@@ -22,7 +22,7 @@ const UserProfile = () => {
 
     // Fetch author data for each post
     const authorPromises = authorIds.map((author_id) =>
-      fetch(`/api/users?user_id=${author_id}`).then((res) => res.json())
+      fetch(`/api/users/id-${author_id}`).then((res) => res.json())
     );
 
     const authors = await Promise.all(authorPromises);
@@ -45,7 +45,7 @@ const UserProfile = () => {
       // Utilisez l'ID utilisateur passé en paramètre au lieu de user.user_id
       let baseApiUrl = `/api/posts?`;
       let params = `user_id=${user_id}`;
-      let limitsUrl = `limit=${limit}&offset=${offset}`;
+      let limitsUrl = `&limit=${limit}&offset=${offset}`;
       const postApiUrl = baseApiUrl + params + limitsUrl;
       const res = await fetch(postApiUrl);
       const postData = await res.json();
@@ -100,7 +100,7 @@ const UserProfile = () => {
 
     const cleanUsername = username.substring(1); // Enlever le @ de l'URL
     async function fetchUserData() {
-      const res = await fetch(`/api/users?username=${cleanUsername}`);
+      const res = await fetch(`/api/users/username-${cleanUsername}`);
       const data = await res.json();
       setUser(data);
 
@@ -143,7 +143,7 @@ const UserProfile = () => {
               {posts.length > 0 ? (
                 posts.map((post) => (
                   <Post
-                    key={post.id}
+                    key={post.id} // Ajout de la prop "key" unique
                     props={post}
                     refreshPosts={fetchData}
                     onTagClick={""}

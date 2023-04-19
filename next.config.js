@@ -24,4 +24,16 @@ module.exports = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/users/id-:user_id",
+        destination: "/api/users/id-[user_id]",
+      },
+      {
+        source: "/api/users/username-:username",
+        destination: "/api/users/username-[username]",
+      },
+    ];
+  },
 };

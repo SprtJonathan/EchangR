@@ -78,6 +78,9 @@ const uploadMiddleware = upload.array("attachment");
 apiRoute.use(uploadMiddleware);
 
 apiRoute.get(async (req, res) => {
+  // Set cache control header
+  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+
   const postId = req.query.id;
   const user_id = req.query.user_id;
   const searchQuery = req.query.searchQuery || "";
@@ -120,6 +123,9 @@ apiRoute.get(async (req, res) => {
 });
 
 apiRoute.post(async (req, res) => {
+  // Set cache control header
+  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+
   const authResult = await isAuthenticated(req);
   if (!authResult.isAuthenticated) {
     res.status(401).json({ message: authResult.message });
@@ -171,10 +177,16 @@ apiRoute.post(async (req, res) => {
   }
 });
 
-apiRoute.put(async (req, res) => {});
+apiRoute.put(async (req, res) => {
+  // Set cache control header
+  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+});
 
 /* PRIORITY : AJOUTER LA SUPPRESSION DES COMMENTAIRES ET REACTIONS LORS DU DELETE */
 apiRoute.delete(async (req, res) => {
+  // Set cache control header
+  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+
   const authResult = await isAuthenticated(req);
   if (!authResult.isAuthenticated) {
     res.status(401).json({ message: authResult.message });

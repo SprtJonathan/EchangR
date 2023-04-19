@@ -49,9 +49,10 @@ export default function Header({ home, setSearchQuery }) {
             <Image
               priority
               src="/images/EchangR_Logo.png"
-              height={64}
-              width={64}
+              height={512}
+              width={512}
               alt="website-logo"
+              className={styles.websiteLogo}
             />
           </Link>
           <h1 className={utilStyles.heading2Xl}>

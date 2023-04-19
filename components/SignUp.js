@@ -7,6 +7,7 @@ import ImagePreview from "./ImagePreview";
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [description, setDescription] = useState("");
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ export default function SignUp() {
         `/api/users/check-username?username=${username.toLocaleLowerCase()}`
       );
       const data = await response.json();
-      console.log(data)
+      console.log(data);
 
       if (data.available === false) {
         setMessage("Ce nom d'utilisateur est déjà pris.");
@@ -91,6 +92,7 @@ export default function SignUp() {
     const formData = new FormData();
     formData.append("username", username.toLocaleLowerCase());
     formData.append("displayName", displayName);
+    formData.append("description", description);
     formData.append("fname", fname);
     formData.append("lname", lname);
     formData.append("email", email);
@@ -102,7 +104,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/signup", {
         method: "POST",
         body: formData,
       });
@@ -132,6 +134,7 @@ export default function SignUp() {
       <form onSubmit={handleSubmit}>
         {/* Ajout de la zone d'affichage des messages d'erreur */}
         {message && <div className={utilStyles.errorMessage}>{message}</div>}
+        <h4>Informations publiques</h4>
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="profilePicture">
             Image de profil
@@ -179,6 +182,21 @@ export default function SignUp() {
             required
           />
         </div>
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="description">
+            Description du profil
+          </label>
+          <input
+            type="textarea"
+            id="description"
+            className={styles.input}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </div>
+        <hr></hr>
+        <h4>Informations privées</h4>
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="fname">
             Prénom
