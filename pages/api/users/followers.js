@@ -31,7 +31,7 @@ handler.get(async (req, res) => {
           return;
         }
 
-        data.following = followingResults;
+        data.following = followingResults.rows;
 
         connection.query(
           `
@@ -49,7 +49,9 @@ handler.get(async (req, res) => {
               return;
             }
 
-            data.followers = followersResults;
+            data.followers = followersResults.rows;
+
+            //console.log(data)
 
             res.status(200).json(data);
           }
@@ -85,8 +87,11 @@ handler.post(async (req, res) => {
       WHERE follower_id = $1 AND following_id = $2
     `,
       [follower_id, following_id],
-      (error, results) => {
+      (error, resultsRows) => {
+        const results = resultsRows.rows;
+
         if (error) {
+          console.log(error);
           res
             .status(500)
             .json({ message: "Erreur lors de la vérification du suivi." });

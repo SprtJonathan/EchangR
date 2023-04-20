@@ -27,29 +27,6 @@ export default function Home() {
 
   const loggedUser = useSelector((state) => state.user);
 
-  async function fetchAuthorData(posts) {
-    const authorIds = posts.map((post) => post.author_id);
-
-    // Fetch author data for each post
-    const authorPromises = authorIds.map((author_id) =>
-      fetch(`/api/users/id-${author_id}`).then((res) => res.json())
-    );
-
-    const authors = await Promise.all(authorPromises);
-
-    // Map the fetched author data to the posts
-    const postsWithAuthor = posts.map((post, index) => {
-      return {
-        ...post,
-        author: authors[index],
-      };
-    });
-
-    console.log(postsWithAuthor);
-
-    return postsWithAuthor;
-  }
-
   const noPostIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +56,16 @@ export default function Home() {
       let limitsUrl = `limit=${limit}&offset=${offset}`;
       let searchQueryUrl = `&searchQuery=${searchQuery}`;
       let tagFilterUrl = selectedTag ? `&tagFilter=${selectedTag}` : "";
-      const postApiUrl = baseApiUrl + limitsUrl + searchQueryUrl + tagFilterUrl;
+      console.log(loggedUser.user_id); // loggedUser.user_id est retourné comme null ici
+      let checkLoggedUserFollow = loggedUser.user_id
+        ? `&loggedUser_id=${loggedUser.user_id}`
+        : "";
+      const postApiUrl =
+        baseApiUrl +
+        limitsUrl +
+        searchQueryUrl +
+        tagFilterUrl +
+        checkLoggedUserFollow;
       const res = await fetch(postApiUrl);
       const data = await res.json();
 
@@ -89,14 +75,16 @@ export default function Home() {
         setNoMorePosts(false);
       }
 
-      // Fetch author data for each post
-      const postsWithAuthor = await fetchAuthorData(data);
+      // Les données de l'auteur sont déjà incluses dans la réponse de l'API
+      const postsWithAuthor = data;
+
+      console.log(data);
 
       // Sort the posts by date in ascending order
       const sortedPosts = postsWithAuthor.sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
-      console.log(loadMore);
+      //console.log(loadMore);
       if (loadMore) {
         // console.log("Loading more posts...");
 
@@ -112,8 +100,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchData();
-  }, [searchQuery, selectedTag]);
+    if (loggedUser && loggedUser.user_id) {
+      fetchData();
+    }
+  }, [searchQuery, selectedTag, loggedUser]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -140,7 +130,7 @@ export default function Home() {
 
   const filteredPosts = posts;
 
-  console.log(posts);
+  //console.log(posts);
 
   function sortPosts(postsToSort, option) {
     switch (option) {

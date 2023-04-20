@@ -22,11 +22,11 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET": {
-      const { postId } = req.query;
+      const { post_id } = req.query;
 
       connection.query(
         "SELECT * FROM comments WHERE post_id = $1",
-        [postId],
+        [post_id],
         (error, results, fields) => {
           if (error) throw error;
           res.status(200).json(results);
@@ -37,11 +37,11 @@ export default async function handler(req, res) {
     }
 
     case "POST": {
-      const { postId, comment } = req.body;
+      const { post_id, comment } = req.body;
 
       connection.query(
         "INSERT INTO comments (author_id, post_id, comment) VALUES ($1, $2, $3)",
-        [user_id, postId, comment],
+        [user_id, post_id, comment],
         (error, results, fields) => {
           if (error) throw error;
           res.status(201).json({ message: "Comment added." });

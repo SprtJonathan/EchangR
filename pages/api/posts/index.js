@@ -79,7 +79,7 @@ apiRoute.use(uploadMiddleware);
 
 apiRoute.get(async (req, res) => {
   // Set cache control header
-  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+  res.setHeader("Cache-Control", "public, max-age=10, stale-while-revalidate");
 
   const postId = req.query.id;
   const user_id = req.query.user_id;
@@ -87,6 +87,10 @@ apiRoute.get(async (req, res) => {
   const tagFilter = req.query.tagFilter || null;
   const limit = parseInt(req.query.limit) || 100;
   const offset = parseInt(req.query.offset) || 0;
+
+  const loggedUser_id = req.query.loggedUser_id || null;
+
+  console.log(loggedUser_id);
 
   if (postId) {
     // Si un ID de post est fourni, récupérez uniquement ce post spécifique
@@ -106,18 +110,49 @@ apiRoute.get(async (req, res) => {
     const searchPattern = `%${searchQuery}%`;
 
     let query = `
-      SELECT * FROM posts
-      WHERE (COALESCE($2, '') = '' OR tags LIKE $2)
-      AND (title LIKE $1 OR description LIKE $1 OR author_id IN (
-        SELECT id FROM users WHERE username LIKE $1 OR display_name LIKE $1
-      ))
-      ORDER BY date DESC LIMIT $3 OFFSET $4
+    SELECT
+    posts.*,
+    users.username,
+    users.display_name,
+    users.profile_picture_url,
+    users.user_description,
+    users.created_at,
+    users.updated_at,
+    (
+      SELECT COUNT(*)
+      FROM user_followers AS uf
+      WHERE uf.follower_id = users.user_id
+    ) AS following_count,
+    (
+      SELECT COUNT(*)
+      FROM user_followers AS uf
+      WHERE uf.following_id = users.user_id
+    ) AS followers_count,
+    (
+      SELECT COUNT(*)
+      FROM user_followers AS uf
+      WHERE uf.follower_id = $5 AND uf.following_id = users.user_id
+    ) > 0 AS is_followed_by_current_user
+    FROM posts
+    INNER JOIN users ON posts.author_id = users.user_id
+    WHERE (COALESCE($2, '') = '' OR tags LIKE $2)
+    AND (title LIKE $1 OR description LIKE $1 OR author_id IN (
+      SELECT id FROM users WHERE username LIKE $1 OR display_name LIKE $1
+    ))
+    ORDER BY date DESC LIMIT $3 OFFSET $4  
     `;
 
     const tagPattern = tagFilter ? `%${tagFilter}%` : null;
-    const queryParams = [searchPattern, tagPattern, limit, offset];
+    const queryParams = [
+      searchPattern,
+      tagPattern,
+      limit,
+      offset,
+      loggedUser_id,
+    ];
 
     const { rows } = await connection.query(query, queryParams);
+
     res.status(200).json(rows);
   }
 });
@@ -159,10 +194,10 @@ apiRoute.post(async (req, res) => {
           return;
         }
 
-        const postId = results.rows[0].id;
+        const post_id = results.rows[0].id;
 
         res.status(201).json({
-          id: postId,
+          id: post_id,
           title,
           description,
           attachmentsPaths,
@@ -195,7 +230,7 @@ apiRoute.delete(async (req, res) => {
 
   // Récupère l'ID du post à supprimer depuis les paramètres de l'URL
   const author_id = req.query.author_id;
-  const postId = req.query.id;
+  const post_id = req.query.id;
 
   const { user_id, role_id } = authResult.user;
 
@@ -205,20 +240,20 @@ apiRoute.delete(async (req, res) => {
 
       const { rows } = await connection.query(
         "SELECT attachment FROM posts WHERE id = $1",
-        [postId]
+        [post_id]
       );
 
       const attachmentPaths = JSON.parse(rows[0].attachment);
 
       await connection.query("DELETE FROM comments WHERE post_id = $1", [
-        postId,
+        post_id,
       ]);
 
       await connection.query("DELETE FROM reactions WHERE post_id = $1", [
-        postId,
+        post_id,
       ]);
 
-      await connection.query("DELETE FROM posts WHERE id = $1", [postId]);
+      await connection.query("DELETE FROM posts WHERE id = $1", [post_id]);
 
       await connection.query("COMMIT");
 

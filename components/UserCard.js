@@ -14,10 +14,6 @@ export default function UserCard({
   displayDescription = true,
   ...props
 }) {
-  const [following, setFollowing] = useState([]);
-  const [followers, setFollowers] = useState([]);
-  const [isFollowing, setIsFollowing] = useState(false);
-
   const {
     user_id,
     username,
@@ -26,43 +22,21 @@ export default function UserCard({
     userDescription,
     created_at,
     updated_at,
+    followers_count,
+    following_count,
+    is_followed_by_current_user,
   } = props.user;
 
   const creationDate = moment(created_at).format("DD/MM/YYYY");
   const updateDate = moment(updated_at).format("DD/MM/YYYY");
+  console.log(is_followed_by_current_user);
+
+  const [isFollowing, setIsFollowing] = useState(is_followed_by_current_user);
+  const [followersCount, setFollowersCount] = useState(followers_count);
 
   const loggedUser = useSelector((state) => state.user);
 
-  function checkIsFollowing() {
-    const userIsFollowing = followers.some((follower) => {
-      return follower === loggedUser.user_id;
-    });
-
-    setIsFollowing(userIsFollowing);
-  }
-
-  const fetchUserFollowData = async () => {
-    try {
-      const response = await fetch(`/api/users/followers?user_id=${user_id}`);
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des données.");
-      }
-      const data = await response.json();
-      setFollowers(
-        Array.isArray(data)
-          ? data.followers.map((follower) => follower.follower_id)
-          : followers
-      );
-      setFollowing(
-        Array.isArray(data)
-          ? data.following.map((following) => following.following_id)
-          : following
-      );
-    } catch (error) {
-      console.error(error.message);
-    }
-    console.log(following);
-  };
+  //console.log(user_id);
 
   async function toggleFollowUser() {
     const token = localStorage.getItem("token");
@@ -86,10 +60,17 @@ export default function UserCard({
           throw new Error(error.message);
         }
 
-        // Mettre à jour l'état isFollowing
-        fetchUserFollowData();
+        // Ajouter cette ligne pour afficher la réponse de l'API
+        //console.log("Réponse de l'API:", await response.json());
 
-        // Gérer d'autres mises à jour de l'interface utilisateur, par exemple mettre à jour la liste des followers
+        // Utilisez une variable temporaire pour stocker l'état de suivi avant la mise à jour
+        const newIsFollowing = !isFollowing;
+
+        // Mettre à jour l'état local en fonction de la nouvelle valeur
+        setIsFollowing(newIsFollowing);
+        setFollowersCount(
+          newIsFollowing ? +followersCount + 1 : followersCount - 1
+        );
       } catch (error) {
         console.error(
           "Erreur lors de la modification du suivi :",
@@ -98,16 +79,6 @@ export default function UserCard({
         // Gérer l'erreur, par exemple afficher un message d'erreur à l'utilisateur
       }
     }
-  }
-
-  if (displayStats) {
-    useEffect(() => {
-      fetchUserFollowData();
-    }, []);
-
-    useEffect(() => {
-      checkIsFollowing();
-    }, [followers, loggedUser]);
   }
 
   return (
@@ -172,9 +143,9 @@ export default function UserCard({
               </button>
             )}
           <div className={styles.userStats}>
-            <p className={styles.username}>Followers : {followers.length}</p>
+            <p className={styles.username}>Followers : {followersCount}</p>
             <p className={styles.username}>
-              Utilisateurs suivis : {following.length}
+              Utilisateurs suivis : {following_count}
             </p>
           </div>
         </>

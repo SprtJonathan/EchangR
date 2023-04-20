@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/test-db-connection.js": {
-      "maxDuration": 30
-    }
-  }
-}

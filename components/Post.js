@@ -36,9 +36,37 @@ export default function Post({ props, refreshPosts, onTagClick }) {
   const tags = JSON.parse(props.tags);
   const author_id = props.author_id;
 
+  // users.username,
+  //   users.display_name,
+  //   users.profile_picture_url,
+  //   users.user_description,
+  //   users.created_at,
+  //   users.updated_at,
+  //   (
+  //     SELECT COUNT(*)
+  //     FROM user_followers AS uf
+  //     WHERE uf.follower_id = users.user_id
+  //   ) AS following_count,
+  //   (
+  //     SELECT COUNT(*)
+  //     FROM user_followers AS uf
+  //     WHERE uf.following_id = users.user_id
+  //   ) AS followers_count
+  const authorData = {
+    user_id: props.author_id,
+    username: props.username,
+    display_name: props.display_name,
+    user_description: props.user_description,
+    profile_picture_url: props.profile_picture_url,
+    created_at: props.created_at,
+    updated_at: props.updated_at,
+    followers_count: props.followers_count,
+    following_count: props.following_count,
+    is_followed_by_current_user: props.is_followed_by_current_user,
+  };
+
   const [dateToShow, setDateToShow] = useState(getTimeSincePost(date, true)); // Initialiser la valeur de dateToShow avec la date formatée en "x temps depuis"
   const [dateCountdownFormat, setDateCountdownFormat] = useState(true);
-  const [authorData, setAuthorData] = useState();
   const [displayUserCard, setDisplayUserCard] = useState(false);
 
   const [postReactions, setPostReactions] = useState([]);
@@ -69,7 +97,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
    */
   async function fetchReactions() {
     try {
-      const response = await fetch(`/api/posts/reactions?postId=${id}`);
+      const response = await fetch(`/api/posts/reactions?post_id=${id}`);
       const data = await response.json();
       setPostReactions(data);
     } catch (error) {
@@ -78,17 +106,8 @@ export default function Post({ props, refreshPosts, onTagClick }) {
   }
 
   /**
-   * It fetches data from the server and sets the data to the state.
-   */
-  async function fetchAuthorData() {
-    const res = await fetch(`/api/users/id-${author_id}`, {});
-    const data = await res.json();
-    setAuthorData(data);
-  }
-
-  /**
    * It takes an emoji as an argument, gets the token from local storage, and then sends a POST request
-   * to the server with the token, the postId, and the emoji.
+   * to the server with the token, the post_id, and the emoji.
    *
    * If the response is successful, it calls the fetchReactions function.
    *
@@ -105,7 +124,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ postId: id, emoji }),
+          body: JSON.stringify({ post_id: id, emoji }),
         });
 
         fetchReactions();
@@ -277,7 +296,6 @@ export default function Post({ props, refreshPosts, onTagClick }) {
 
   useEffect(() => {
     fetchReactions();
-    fetchAuthorData();
   }, []);
 
   useEffect(() => {
@@ -370,7 +388,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
                   />
                   <p className={utilStyles.authorNames}>
                     <span className={utilStyles.authorDisplayName}>
-                      {authorData.displayName}
+                      {authorData.display_name}
                     </span>
                     <span className={utilStyles.authorUsername}>
                       @{authorData.username}
@@ -546,7 +564,7 @@ export default function Post({ props, refreshPosts, onTagClick }) {
         </section>
         {commentsSectionOpen && (
           <div id="comments-section">
-            <CommentsContainer postId={post.id} />
+            <CommentsContainer post_id={post.id} />
           </div>
         )}
         <Modal show={showModal} onClose={() => setShowModal(false)}>
