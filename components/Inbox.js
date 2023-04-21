@@ -69,6 +69,7 @@ const Inbox = ({ user_id, closeInbox }) => {
             conversation={selectedConversation}
             user_id={user_id}
             closeConversation={() => setSelectedConversation(null)}
+            socket={socket}
           />
         ) : (
           <>

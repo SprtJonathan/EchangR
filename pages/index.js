@@ -48,7 +48,7 @@ export default function Home() {
     }
   };
 
-  async function fetchData(loadMore = false) {
+  async function fetchData(loadMore = false, user = loggedUser) {
     try {
       const offset = loadMore ? posts.length : 0;
       const limit = 3;
@@ -56,10 +56,9 @@ export default function Home() {
       let limitsUrl = `limit=${limit}&offset=${offset}`;
       let searchQueryUrl = `&searchQuery=${searchQuery}`;
       let tagFilterUrl = selectedTag ? `&tagFilter=${selectedTag}` : "";
-      console.log(loggedUser.user_id); // loggedUser.user_id est retourné comme null ici
-      let checkLoggedUserFollow = loggedUser.user_id
-        ? `&loggedUser_id=${loggedUser.user_id}`
-        : "";
+      let checkLoggedUserFollow =
+        user && user.user_id ? `&loggedUser_id=${user.user_id}` : "";
+
       const postApiUrl =
         baseApiUrl +
         limitsUrl +
@@ -100,8 +99,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (loggedUser && loggedUser.user_id) {
+    if (loggedUser) {
       fetchData();
+    } else {
+      fetchData({});
     }
   }, [searchQuery, selectedTag, loggedUser]);
 

@@ -1,4 +1,9 @@
 import { io } from "socket.io-client";
 
-const socket = io("0.0.0.0:3000");
+let socket;
+
+if (typeof window !== "undefined") {
+  socket = io(window.location.origin);
+}
+
 export default socket;

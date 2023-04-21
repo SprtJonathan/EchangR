@@ -3,10 +3,9 @@ import Image from "next/image";
 
 import styles from "./Conversation.module.css";
 
-const Conversation = ({ conversation, user_id, closeConversation }) => {
+const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const [socket, setSocket] = useState(null); // Websocket
 
   const token = localStorage.getItem("token");
 
@@ -75,21 +74,6 @@ const Conversation = ({ conversation, user_id, closeConversation }) => {
   useEffect(() => {
     // Récupérer les messages précédents de l'API
     fetchMessages();
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const newSocket = new WebSocket(
-        `${location.protocol === "https:" ? "wss://" : "ws://"}${
-          location.host
-        }/api/socket`
-      );
-      setSocket(newSocket);
-
-      return () => {
-        newSocket.close();
-      };
-    }
   }, []);
 
   useEffect(() => {
