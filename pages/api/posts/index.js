@@ -78,38 +78,42 @@ const uploadMiddleware = upload.array("attachment");
 apiRoute.use(uploadMiddleware);
 
 apiRoute.get(async (req, res) => {
-  // Set cache control header
-  res.setHeader("Cache-Control", "public, max-age=10, stale-while-revalidate");
-
-  const postId = req.query.id;
-  const user_id = req.query.user_id;
-  const searchQuery = req.query.searchQuery || "";
-  const tagFilter = req.query.tagFilter || null;
-  const limit = parseInt(req.query.limit) || 100;
-  const offset = parseInt(req.query.offset) || 0;
-
-  const loggedUser_id = req.query.loggedUser_id || null;
-
-  console.log(loggedUser_id);
-
-  if (postId) {
-    // Si un ID de post est fourni, récupérez uniquement ce post spécifique
-    const { rows } = await connection.query(
-      "SELECT * FROM posts WHERE id = $1",
-      [postId]
+  try {
+    // Set cache control header
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=10, stale-while-revalidate"
     );
-    res.status(200).json(rows);
-  } else if (user_id) {
-    // Si un user_id est fourni, récupérez uniquement les posts dont le author_id == user_id
-    const { rows } = await connection.query(
-      "SELECT * FROM posts WHERE author_id = $1 ORDER BY date DESC LIMIT $2 OFFSET $3",
-      [user_id, limit, offset]
-    );
-    res.status(200).json(rows);
-  } else {
-    const searchPattern = `%${searchQuery}%`;
 
-    let query = `
+    const postId = req.query.id;
+    const user_id = req.query.user_id;
+    const searchQuery = req.query.searchQuery || "";
+    const tagFilter = req.query.tagFilter || null;
+    const limit = parseInt(req.query.limit) || 100;
+    const offset = parseInt(req.query.offset) || 0;
+
+    const loggedUser_id = req.query.loggedUser_id || null;
+
+    console.log(loggedUser_id);
+
+    if (postId) {
+      // Si un ID de post est fourni, récupérez uniquement ce post spécifique
+      const { rows } = await connection.query(
+        "SELECT * FROM posts WHERE id = $1",
+        [postId]
+      );
+      res.status(200).json(rows);
+    } else if (user_id) {
+      // Si un user_id est fourni, récupérez uniquement les posts dont le author_id == user_id
+      const { rows } = await connection.query(
+        "SELECT * FROM posts WHERE author_id = $1 ORDER BY date DESC LIMIT $2 OFFSET $3",
+        [user_id, limit, offset]
+      );
+      res.status(200).json(rows);
+    } else {
+      const searchPattern = `%${searchQuery}%`;
+
+      let query = `
     SELECT
     posts.*,
     users.username,
@@ -142,138 +146,166 @@ apiRoute.get(async (req, res) => {
     ORDER BY date DESC LIMIT $3 OFFSET $4  
     `;
 
-    const tagPattern = tagFilter ? `%${tagFilter}%` : null;
-    const queryParams = [
-      searchPattern,
-      tagPattern,
-      limit,
-      offset,
-      loggedUser_id,
-    ];
+      const tagPattern = tagFilter ? `%${tagFilter}%` : null;
+      const queryParams = [
+        searchPattern,
+        tagPattern,
+        limit,
+        offset,
+        loggedUser_id,
+      ];
 
-    const { rows } = await connection.query(query, queryParams);
+      const { rows } = await connection.query(query, queryParams);
 
-    res.status(200).json(rows);
+      res.status(200).json(rows);
+    }
+  } catch (error) {
+    console.error("Error in GET route:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 apiRoute.post(async (req, res) => {
-  // Set cache control header
-  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
-
-  const authResult = await isAuthenticated(req);
-  if (!authResult.isAuthenticated) {
-    res.status(401).json({ message: authResult.message });
-    return;
-  }
-
-  // console.log(req.files);
-
   try {
-    const { title, description, tags } = req.body;
-    const author_id = authResult.user.user_id;
-    let attachments = req.files;
-    let attachmentsPaths = [];
+    // Set cache control header
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=60, stale-while-revalidate"
+    );
 
-    if (attachments.length) {
-      attachments.forEach((attachment) => {
-        const path = "/uploads/posts/" + attachment.filename;
-        attachmentsPaths.push(`${path}`);
-      });
+    const authResult = await isAuthenticated(req);
+    if (!authResult.isAuthenticated) {
+      res.status(401).json({ message: authResult.message });
+      return;
     }
 
-    //console.log(tags);
+    // console.log(req.files);
 
-    connection.query(
-      "INSERT INTO posts (title, description, attachment, tags, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [title, description, JSON.stringify(attachmentsPaths), tags, author_id],
-      function (error, results, fields) {
-        if (error) {
-          console.error("Error inserting post into database:", error);
-          res.status(500).json({ message: "Error creating post" });
-          return;
-        }
+    try {
+      const { title, description, tags } = req.body;
+      const author_id = authResult.user.user_id;
+      let attachments = req.files;
+      let attachmentsPaths = [];
 
-        const post_id = results.rows[0].id;
-
-        res.status(201).json({
-          id: post_id,
-          title,
-          description,
-          attachmentsPaths,
-          tags,
-          author_id,
+      if (attachments.length) {
+        attachments.forEach((attachment) => {
+          const path = "/uploads/posts/" + attachment.filename;
+          attachmentsPaths.push(`${path}`);
         });
       }
-    );
+
+      //console.log(tags);
+
+      connection.query(
+        "INSERT INTO posts (title, description, attachment, tags, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+        [title, description, JSON.stringify(attachmentsPaths), tags, author_id],
+        function (error, results, fields) {
+          if (error) {
+            console.error("Error inserting post into database:", error);
+            res.status(500).json({ message: "Error creating post" });
+            return;
+          }
+
+          const post_id = results.rows[0].id;
+
+          res.status(201).json({
+            id: post_id,
+            title,
+            description,
+            attachmentsPaths,
+            tags,
+            author_id,
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error creating post:", error);
+      res.status(500).json({ message: "Error creating post" });
+    }
   } catch (error) {
-    console.error("Error creating post:", error);
-    res.status(500).json({ message: "Error creating post" });
+    console.error("Error in POST route:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 apiRoute.put(async (req, res) => {
-  // Set cache control header
-  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+  try {
+    // Set cache control header
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=10, stale-while-revalidate"
+    );
+  } catch (error) {
+    console.error("Error in PUT route:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 /* PRIORITY : AJOUTER LA SUPPRESSION DES COMMENTAIRES ET REACTIONS LORS DU DELETE */
 apiRoute.delete(async (req, res) => {
-  // Set cache control header
-  res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
+  try {
+    // Set cache control header
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=10, stale-while-revalidate"
+    );
 
-  const authResult = await isAuthenticated(req);
-  if (!authResult.isAuthenticated) {
-    res.status(401).json({ message: authResult.message });
-    return;
-  }
-
-  // Récupère l'ID du post à supprimer depuis les paramètres de l'URL
-  const author_id = req.query.author_id;
-  const post_id = req.query.id;
-
-  const { user_id, role_id } = authResult.user;
-
-  if (user_id == author_id || role_id > 0) {
-    try {
-      await connection.query("BEGIN");
-
-      const { rows } = await connection.query(
-        "SELECT attachment FROM posts WHERE id = $1",
-        [post_id]
-      );
-
-      const attachmentPaths = JSON.parse(rows[0].attachment);
-
-      await connection.query("DELETE FROM comments WHERE post_id = $1", [
-        post_id,
-      ]);
-
-      await connection.query("DELETE FROM reactions WHERE post_id = $1", [
-        post_id,
-      ]);
-
-      await connection.query("DELETE FROM posts WHERE id = $1", [post_id]);
-
-      await connection.query("COMMIT");
-
-      if (attachmentPaths.length > 0) {
-        for (const path of attachmentPaths) {
-          const fullPath = `./public${path}`;
-          await deleteImage(fullPath);
-        }
-      }
-
-      res.status(200).json({ message: "Post supprimé avec succès !" });
-    } catch (error) {
-      await connection.query("ROLLBACK");
-      console.error("Erreur lors de la suppression du post:", error);
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du post" });
+    const authResult = await isAuthenticated(req);
+    if (!authResult.isAuthenticated) {
+      res.status(401).json({ message: authResult.message });
+      return;
     }
-  } else {
-    res.status(403).json({ message: "Suppression refusée" });
+
+    // Récupère l'ID du post à supprimer depuis les paramètres de l'URL
+    const author_id = req.query.author_id;
+    const post_id = req.query.id;
+
+    const { user_id, role_id } = authResult.user;
+
+    if (user_id == author_id || role_id > 0) {
+      try {
+        await connection.query("BEGIN");
+
+        const { rows } = await connection.query(
+          "SELECT attachment FROM posts WHERE id = $1",
+          [post_id]
+        );
+
+        const attachmentPaths = JSON.parse(rows[0].attachment);
+
+        await connection.query("DELETE FROM comments WHERE post_id = $1", [
+          post_id,
+        ]);
+
+        await connection.query("DELETE FROM reactions WHERE post_id = $1", [
+          post_id,
+        ]);
+
+        await connection.query("DELETE FROM posts WHERE id = $1", [post_id]);
+
+        await connection.query("COMMIT");
+
+        if (attachmentPaths.length > 0) {
+          for (const path of attachmentPaths) {
+            const fullPath = `./public${path}`;
+            await deleteImage(fullPath);
+          }
+        }
+
+        res.status(200).json({ message: "Post supprimé avec succès !" });
+      } catch (error) {
+        await connection.query("ROLLBACK");
+        console.error("Erreur lors de la suppression du post:", error);
+        res
+          .status(500)
+          .json({ message: "Erreur lors de la suppression du post" });
+      }
+    } else {
+      res.status(403).json({ message: "Suppression refusée" });
+    }
+  } catch (error) {
+    console.error("Error in DELETE route:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
