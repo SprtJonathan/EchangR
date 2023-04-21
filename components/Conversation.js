@@ -3,7 +3,14 @@ import Image from "next/image";
 
 import styles from "./Conversation.module.css";
 
-const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
+import Pusher from "pusher-js";
+
+const pusher = new Pusher("c5177ffd69682f39d63b", {
+  cluster: "eu",
+  forceTLS: true,
+});
+
+const Conversation = ({ conversation, user_id, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
 
@@ -13,17 +20,17 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
 
   const fetchMessages = async () => {
     const response = await fetch(
-      `/api/users/direct-messages?senderId=${conversation.sender_id}&recipientId=${conversation.recipient_id}`,
+      `/api/users/direct-messages?sender_id=${conversation.sender_id}&recipient_id=${conversation.recipient_id}`,
       {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       }
     );
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
     setMessages(data);
   };
 
@@ -77,9 +84,9 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
-    // Écouter les nouveaux messages
-    socket.on("newMessage", (newMessage) => {
+    const channel = pusher.subscribe(`private-user-${user_id}`);
+
+    channel.bind("newMessage", (newMessage) => {
       // Vérifier si le message appartient à la conversation actuelle
       if (
         (newMessage.sender_id === user_id &&
@@ -92,11 +99,11 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
       }
     });
 
-    // Supprimer l'écouteur d'événements lorsque le composant est démonté
     return () => {
-      socket.off("newMessage");
+      channel.unbind("newMessage");
+      pusher.unsubscribe(`private-user-${user_id}`);
     };
-  }, [socket, user_id, conversation]);
+  }, [user_id, conversation]);
 
   useEffect(() => {
     scrollToBottom();
@@ -107,7 +114,10 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
 
     const response = await fetch("/api/users/direct-messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         sender_id: user_id,
         recipient_id: conversation.user_id,
@@ -117,11 +127,7 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
     });
 
     if (response.ok) {
-      const newMessage = await response.json();
       setMessage("");
-
-      // Émettre l'événement "sendMessage"
-      socket.emit("sendMessage", newMessage);
     } else {
       alert("Erreur lors de l'envoi du message");
     }
@@ -139,9 +145,10 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
             height={32}
             width={32}
             className={styles.conversationPic}
+            alt={`${conversation.display_name}'s profile picture`}
           />
           <div className={styles.conversationNames}>
-            <h2>Conversation avec {conversation.displayName}</h2>
+            <h2>Conversation avec {conversation.display_name}</h2>
             <span>(@{conversation.username})</span>
           </div>
         </div>
@@ -165,7 +172,7 @@ const Conversation = ({ conversation, user_id, closeConversation, socket }) => {
                   <strong>
                     {msg.sender_id === user_id
                       ? "Vous"
-                      : conversation.displayName}
+                      : conversation.display_name}
                     :
                   </strong>
                   <span>{msgDate}</span>

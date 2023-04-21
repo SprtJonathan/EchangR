@@ -3,9 +3,14 @@ import ConversationsList from "./ConversationsList";
 import Conversation from "./Conversation";
 import NewDM from "./NewDM";
 
-import socket from "./socket";
-
 import styles from "./Inbox.module.css";
+
+import Pusher from "pusher-js";
+
+const pusher = new Pusher("c5177ffd69682f39d63b", {
+  cluster: "eu",
+  forceTLS: true,
+});
 
 const Inbox = ({ user_id, closeInbox }) => {
   const [conversations, setConversations] = useState([]);
@@ -23,9 +28,11 @@ const Inbox = ({ user_id, closeInbox }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("La conv : ");
-        console.log(data);
+        // console.log("La conv : ");
+        // console.log(data);
         setConversations(data);
+        // console.log("Les convs");
+        // console.log(conversations);
       });
   }, [user_id]);
 
@@ -34,9 +41,12 @@ const Inbox = ({ user_id, closeInbox }) => {
   };
 
   useEffect(() => {
-    // Écouter les nouveaux messages
-    socket.on("newMessage", (newMessage) => {
-      // Mettre à jour la liste des conversations
+    // Subscribe to the private channel for the user
+    const channel = pusher.subscribe(`private-user-${user_id}`);
+
+    // Listen for new messages
+    channel.bind("newMessage", (newMessage) => {
+      // Update the list of conversations
       fetch(`/api/users/direct-messages/conversations?user_id=${user_id}`, {
         method: "GET",
         headers: {
@@ -50,11 +60,14 @@ const Inbox = ({ user_id, closeInbox }) => {
         });
     });
 
-    // Supprimer l'écouteur d'événements lorsque le composant est démonté
+    // Clean up the event listener when the component is unmounted
     return () => {
-      socket.off("newMessage");
+      channel.unbind("newMessage");
+      pusher.unsubscribe(`private-user-${user_id}`);
     };
-  }, [user_id, socket]);
+  }, [user_id]);
+
+  console.log(selectedConversation);
 
   return (
     <div className={styles.inbox}>
@@ -62,32 +75,33 @@ const Inbox = ({ user_id, closeInbox }) => {
         <h2>Boîte de réception</h2>{" "}
         <button onClick={() => closeInbox(false)}>X</button>
       </div>
-      {Array.isArray(selectedConversation) &&
-      selectedConversation.length > 0 ? (
+      {Array.isArray(conversations) && conversations.length > 0 ? (
         selectedConversation ? (
           <Conversation
             conversation={selectedConversation}
             user_id={user_id}
             closeConversation={() => setSelectedConversation(null)}
-            socket={socket}
           />
         ) : (
           <>
-            <NewDM senderId={user_id} />
+            <NewDM sender_id={user_id} />
             <div className={styles.conversationsList}>
-              {conversations.map((conversation) => (
-                <ConversationsList
-                  key={conversation.message_id}
-                  conversation={conversation}
-                  onSelectConversation={handleSelectConversation}
-                />
-              ))}
+              {conversations.map((conversation) => {
+                console.log(conversation);
+                return (
+                  <ConversationsList
+                    key={conversation.message_id}
+                    conversation={conversation}
+                    onSelectConversation={handleSelectConversation}
+                  />
+                );
+              })}
             </div>
           </>
         )
       ) : (
         <>
-          <NewDM senderId={user_id} />
+          <NewDM sender_id={user_id} />
           <div>Aucune conversation</div>
         </>
       )}

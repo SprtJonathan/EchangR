@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import styles from "./NewDM.module.css";
 
-const NewDirectMessage = ({ senderId }) => {
+const NewDirectMessage = ({ sender_id }) => {
   const [recipientUsername, setRecipientUsername] = useState("");
   const [message, setMessage] = useState("");
   const [displayNewMessageForm, setDisplayNewMessageForm] = useState(false);
@@ -10,9 +10,11 @@ const NewDirectMessage = ({ senderId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const token = localStorage.getItem("token");
+
     // Recherche de l'ID du destinataire en fonction du nom d'utilisateur
     const recipientResponse = await fetch(
-      `/api/users?username=${recipientUsername}`
+      `/api/users/username-${recipientUsername}`
     );
     if (!recipientResponse.ok) {
       alert("Erreur lors de la recherche du destinataire");
@@ -20,14 +22,19 @@ const NewDirectMessage = ({ senderId }) => {
     }
     const recipient = await recipientResponse.json();
     const recipientId = recipient.user_id;
+    const sent_date = new Date();
 
     const response = await fetch("/api/users/direct-messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        sender_id: senderId,
+        sender_id: sender_id,
         recipient_id: recipientId,
         message,
+        sent_date,
       }),
     });
 
@@ -43,7 +50,10 @@ const NewDirectMessage = ({ senderId }) => {
   return (
     <>
       {!displayNewMessageForm ? (
-        <button className={styles.toggleNewMessage} onClick={() => setDisplayNewMessageForm(true)}>
+        <button
+          className={styles.toggleNewMessage}
+          onClick={() => setDisplayNewMessageForm(true)}
+        >
           Nouveau Message
         </button>
       ) : (

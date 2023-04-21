@@ -50,7 +50,7 @@ ORDER BY dm.sent_date DESC;
           "Une erreur s'est produite lors de la récupération des conversations.",
       });
     } else {
-      res.status(200).json(results);
+      res.status(200).json(results.rows);
     }
   });
 });

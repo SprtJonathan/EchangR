@@ -55,9 +55,9 @@ apiRoute.get(async (req, res) => {
 // Delete unread messages
 apiRoute.delete(async (req, res) => {
   const { user_id } = req.query;
-  const { messageId } = req.params;
+  const { message_id } = req.params;
 
-  if (!user_id || !messageId) {
+  if (!user_id || !message_id) {
     res.status(400).json({
       message:
         "Veuillez fournir un identifiant d'utilisateur et un identifiant de message valides.",
@@ -73,7 +73,7 @@ apiRoute.delete(async (req, res) => {
 
   connection.query(
     "DELETE FROM unread_messages WHERE user_id = $1 AND message_id = $2",
-    [user_id, messageId],
+    [user_id, message_id],
     (error, result) => {
       if (error) {
         res.status(500).json({

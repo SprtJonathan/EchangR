@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "./ConversationsList.module.css"; // Ajoutez cette ligne
 
 const ConversationsList = ({ conversation, onSelectConversation }) => {
@@ -11,14 +12,16 @@ const ConversationsList = ({ conversation, onSelectConversation }) => {
       onClick={() => onSelectConversation(conversation)}
       className={styles.conversationItem}
     >
-      <img
+      <Image
         src={conversation.profile_picture_url}
-        alt={`${conversation.displayName} profile`}
-        className={styles.profileImage}
+        height={32}
+        width={32}
+        className={styles.conversationPic}
+        alt={`${conversation.display_name}'s profile picture`}
       />
       <div className={styles.conversationDetails}>
         <h3 className={styles.displayName}>
-          {conversation.displayName} ({conversation.username})
+          {conversation.display_name} ({conversation.username})
         </h3>
         <p className={styles.lastMessage}>{truncatedMessage}...</p>
       </div>
