@@ -1,0 +1,79 @@
+.wrapper {
+  position: relative;
+  background-color: black;
+  background-image: linear-gradient(#89ef00, #24ef00);
+  margin: 1rem auto;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem;
+  color: #f8f8f8;
+}
+
+.content {
+  width: 100%;
+  text-align: left;
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 1rem;
+  background-color: rgba(3, 3, 3, 0.219);
+  word-wrap: break-word;
+}
+.date {
+  width: 100%;
+  text-align: right;
+  color: black;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.characterCounter {
+  font-size: 0.8rem;
+  color: #888;
+  margin-left: 0.5rem;
+}
+
+.newWrapper {
+  margin: 0;
+  border: 1px solid white;
+  border-left: 0;
+  border-right: 0;
+}
+
+.newStatusTitle {
+  font-size: 20px;
+  margin: 2px;
+}
+
+.newStatusForm {
+  width: 100%;
+}
+
+.statusTextContainer {
+}
+
+.statusText {
+  width: 100%;
+  min-height: 50px;
+  border: 0 transparent;
+  border-radius: 10px;
+}
+
+.statusText:focus {
+  border-bottom: 1px solid #89ef00;
+  border-radius: 0;
+  transition: 0.3s all;
+  min-height: 80px;
+}

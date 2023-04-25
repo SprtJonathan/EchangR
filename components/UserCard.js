@@ -29,14 +29,18 @@ export default function UserCard({
 
   const creationDate = moment(created_at).format("DD/MM/YYYY");
   const updateDate = moment(updated_at).format("DD/MM/YYYY");
-  console.log(is_followed_by_current_user);
 
   const [isFollowing, setIsFollowing] = useState(is_followed_by_current_user);
   const [followersCount, setFollowersCount] = useState(followers_count);
+  // console.log(props.user);
 
   const loggedUser = useSelector((state) => state.user);
 
   //console.log(user_id);
+  useEffect(() => {
+    setIsFollowing(is_followed_by_current_user);
+    setFollowersCount(followers_count);
+  }, [followers_count, is_followed_by_current_user]);
 
   async function toggleFollowUser() {
     const token = localStorage.getItem("token");
@@ -98,7 +102,9 @@ export default function UserCard({
               </Link>
               <div className={styles.userInfo}>
                 <Link href={`/@${username}`}>
-                  <h3 className={styles.displayName}>{display_name}</h3>
+                  <h3 className={styles.displayName}>{display_name}</h3>{" "}
+                </Link>
+                <Link href={`/@${username}`}>
                   <p className={styles.username}>@{username}</p>
                 </Link>
                 {displayDescription && <div>{userDescription}</div>}

@@ -3,13 +3,6 @@ import Image from "next/image";
 
 import styles from "./Conversation.module.css";
 
-import Pusher from "pusher-js";
-
-const pusher = new Pusher("c5177ffd69682f39d63b", {
-  cluster: "eu",
-  forceTLS: true,
-});
-
 const Conversation = ({ conversation, user_id, closeConversation }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");

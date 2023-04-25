@@ -6,7 +6,7 @@ import SelectMenuButton from "./SelectMenuButton";
 
 import styles from "./commentsContainer.module.css";
 
-function CommentsContainer({ postId }) {
+function CommentsContainer({ post_id }) {
   const [comments, setComments] = useState([]);
   const [commentsCount, setCommentsCount] = useState(0);
   const [sort, setSort] = useState("created_at");
@@ -20,9 +20,14 @@ function CommentsContainer({ postId }) {
 
   async function fetchComments(sortOption = sort) {
     try {
-      const response = await fetch(
-        `/api/posts/comments?postId=${postId}&sort=${sortOption}`
-      );
+      let baseApiUrl = `/api/posts/comments?`;
+      let postIdUrl = `post_id=${post_id}`;
+      let sortUrl = `&sort=${sortOption}`;
+      let checkLoggedUserFollow =
+      loggedUser && loggedUser.user_id ? `&loggedUser_id=${loggedUser.user_id}` : "";
+      const commentsApiUrl =
+        baseApiUrl + postIdUrl + sortUrl + checkLoggedUserFollow;
+      const response = await fetch(commentsApiUrl);
       const data = await response.json();
       setComments(data);
       setCommentsCount(data.length);
@@ -50,7 +55,7 @@ function CommentsContainer({ postId }) {
         <strong className={styles.commentsCount}>
           {commentsCount} commentaire(s)
         </strong>
-        {comments.length > 1 && (
+        {Array.isArray(comments) && comments.length > 1 && (
           <SelectMenuButton
             toggleText={`Trier par : ${sort}`}
             content={menuContent}
@@ -60,16 +65,18 @@ function CommentsContainer({ postId }) {
       <ul className={styles.commentsList}>
         {loggedUser ? (
           <li>
-            <NewComment postId={postId} onCommentSubmit={fetchComments} />
+            <NewComment post_id={post_id} onCommentSubmit={fetchComments} />
           </li>
         ) : null}
-        {comments.map((comment) => (
-          <Comment
-            comment={comment}
-            loggedUser={loggedUser}
-            onCommentDelete={fetchComments}
-          />
-        ))}
+        {Array.isArray(comments) &&
+          comments.map((comment) => (
+            <Comment
+              key={comment.comment_id}
+              comment={comment}
+              loggedUser={loggedUser}
+              onCommentDelete={fetchComments}
+            />
+          ))}
       </ul>
     </div>
   );

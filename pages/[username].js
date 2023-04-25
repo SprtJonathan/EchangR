@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import styles from "./userPage.module.css";
@@ -7,6 +7,8 @@ import Layout from "../components/layout";
 
 import UserCard from "../components/UserCard";
 import Post from "../components/Post";
+import NewStatus from "../components/NewStatus";
+import Status from "../components/Status";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -17,47 +19,54 @@ const UserProfile = () => {
   const [posts, setPosts] = useState([]);
   const [noMorePosts, setNoMorePosts] = useState(false);
 
-  async function fetchAuthorData(posts) {
-    const authorIds = posts.map((post) => post.author_id);
+  const [status, setStatus] = useState([]);
+  const [noMoreStatus, setNoMoreStatus] = useState(false);
 
-    // Fetch author data for each post
-    const authorPromises = authorIds.map((author_id) =>
-      fetch(`/api/users/id-${author_id}`).then((res) => res.json())
-    );
+  const loadingPostsRef = useRef();
+  const loadingStatusRef = useRef();
 
-    const authors = await Promise.all(authorPromises);
-
-    // Map the fetched author data to the posts
-    const postsWithAuthor = posts.map((post, index) => {
-      return {
-        ...post,
-        author: authors[index],
-      };
-    });
-
-    return postsWithAuthor;
+  function mergePostAndUser(post, user) {
+    return {
+      ...post,
+      username: user.username,
+      display_name: user.display_name,
+      profile_picture_url: user.profile_picture_url,
+      user_description: user.user_description,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      followers_count: user.followers_count,
+      following_count: user.following_count,
+      is_followed_by_current_user: user.is_followed_by_current_user,
+    };
   }
+
+  // console.log(user);
 
   async function fetchData(user_id, loadMore = false) {
     try {
       const offset = loadMore ? posts.length : 0;
-      const limit = 5;
-      // Utilisez l'ID utilisateur passé en paramètre au lieu de user.user_id
+      const limit = 10;
       let baseApiUrl = `/api/posts?`;
       let params = `user_id=${user_id}`;
       let limitsUrl = `&limit=${limit}&offset=${offset}`;
-      const postApiUrl = baseApiUrl + params + limitsUrl;
-      const res = await fetch(postApiUrl);
-      const postData = await res.json();
+      let checkLoggedUserFollow =
+        user && user.user_id ? `&loggedUser_id=${user.user_id}` : "";
+      const postApiUrl =
+        baseApiUrl + params + limitsUrl + checkLoggedUserFollow;
 
-      if (postData.length < limit) {
+      const res = await fetch(postApiUrl);
+      const data = await res.json();
+
+      if (data.length < limit) {
         setNoMorePosts(true);
       } else {
         setNoMorePosts(false);
       }
 
-      // Fetch author data for each post
-      const postsWithAuthor = await fetchAuthorData(postData);
+      // Les données de l'auteur sont déjà incluses dans la réponse de l'API
+      const postsWithAuthor = data;
+
+      console.log(data);
 
       // Sort the posts by date in ascending order
       const sortedPosts = postsWithAuthor.sort(
@@ -65,18 +74,88 @@ const UserProfile = () => {
       );
 
       if (loadMore) {
-        console.log("Loading more posts...");
-
         setPosts([...posts, ...sortedPosts]);
       } else {
-        console.log("No more posts...");
-
         setPosts(sortedPosts);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting) {
+          fetchData(user.user_id, true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentLoadingPostsRef = loadingPostsRef.current;
+    if (currentLoadingPostsRef) {
+      observer.observe(currentLoadingPostsRef);
+    }
+
+    return () => {
+      if (currentLoadingPostsRef) {
+        observer.unobserve(currentLoadingPostsRef);
+      }
+    };
+  }, [loadingPostsRef, fetchData]);
+
+  async function fetchStatusData(user_id, loadMore = false) {
+    try {
+      const offset = loadMore ? status.length : 0;
+      const limit = 5;
+      const statusApiUrl = `/api/status?user_id=${user_id}&limit=${limit}&offset=${offset}`;
+
+      const res = await fetch(statusApiUrl);
+      const data = await res.json();
+
+      if (data.length < limit) {
+        setNoMoreStatus(true);
+      } else {
+        setNoMoreStatus(false);
+      }
+
+      if (loadMore) {
+        setStatus([...status, ...data]);
+      } else {
+        setStatus(data);
+      }
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  }
+
+  function onStatusDelete() {
+    fetchStatusData(user.user_id);
+  }
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting) {
+          fetchStatusData(user.user_id, true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentLoadingStatusRef = loadingStatusRef.current;
+    if (currentLoadingStatusRef) {
+      observer.observe(currentLoadingStatusRef);
+    }
+
+    return () => {
+      if (currentLoadingStatusRef) {
+        observer.unobserve(currentLoadingStatusRef);
+      }
+    };
+  }, [loadingStatusRef, fetchStatusData]);
 
   function handleScroll() {
     if (
@@ -100,14 +179,20 @@ const UserProfile = () => {
 
     const cleanUsername = username.substring(1); // Enlever le @ de l'URL
     async function fetchUserData() {
-      const res = await fetch(`/api/users/username-${cleanUsername}`);
+      let baseApiUrl = `/api/users/username-${cleanUsername}?`;
+      let checkLoggedUserFollow =
+        loggedUser && loggedUser.user_id
+          ? `&loggedUser_id=${loggedUser.user_id}`
+          : "";
+      const userInfoApiUrl = baseApiUrl + checkLoggedUserFollow;
+      const res = await fetch(userInfoApiUrl);
       const data = await res.json();
       setUser(data);
 
       // Appelez la fonction fetchData après avoir défini user, uniquement si data existe
       if (data) {
-        // Passez data.user_id comme argument à fetchData
         fetchData(data.user_id);
+        fetchStatusData(data.user_id);
       }
     }
 
@@ -140,11 +225,11 @@ const UserProfile = () => {
             <h2 className={styles.userContentTitle}>Derniers posts</h2>
             <div className={styles.spacerBar}></div>
             <aside className={styles.userContentContainer}>
-              {posts.length > 0 ? (
+              {Array.isArray(posts) && posts.length > 0 ? (
                 posts.map((post) => (
                   <Post
                     key={post.id} // Ajout de la prop "key" unique
-                    props={post}
+                    props={mergePostAndUser(post, user)}
                     refreshPosts={fetchData}
                     onTagClick={""}
                   />
@@ -152,21 +237,63 @@ const UserProfile = () => {
               ) : (
                 <>
                   <div className={styles.noPostContainer}>
-                    {0}
                     <h3 className={styles.noPostText}>Aucun post disponible</h3>
                     <p className={styles.noPostText}>
-                      Il n'y a actuellement aucun post sur le site. Revenez plus
-                      tard ou créez-en un vous-même !
+                      Cet utilisateur n'a encore rien posté
                     </p>
                   </div>
                 </>
+              )}
+              {!noMorePosts && (
+                <div
+                  ref={loadingPostsRef}
+                  style={{ textAlign: "center", padding: "1rem" }}
+                >
+                  Chargement...
+                </div>
               )}
             </aside>
           </div>
           <div className={styles.spacer}></div>
           <div className={styles.userContentSection}>
-            <h2 className={styles.userContentTitle}>Derniers status</h2>
-            <aside className={styles.userContentContainer}></aside>
+            <h2 className={styles.userContentTitle}>Derniers statut</h2>
+            <div className={styles.spacerBar}></div>
+            <aside className={styles.userContentContainer}>
+              {loggedUser.user_id === user.user_id && (
+                <>
+                  <NewStatus addStatusFunction={fetchStatusData} />
+                </>
+              )}
+              {Array.isArray(status) && status.length > 0 ? (
+                status.map((status) => (
+                  <Status
+                    key={status.status_id} // Ajout de la prop "key" unique
+                    status={status}
+                    loggedUser={loggedUser}
+                    updateStatus={onStatusDelete}
+                  />
+                ))
+              ) : (
+                <>
+                  <div className={styles.noPostContainer}>
+                    <h3 className={styles.noPostText}>
+                      Aucun statut disponible
+                    </h3>
+                    <p className={styles.noPostText}>
+                      Cet utilisateur n'a encore publié aucun statut
+                    </p>
+                  </div>
+                </>
+              )}
+              {!noMoreStatus && (
+                <div
+                  ref={loadingStatusRef}
+                  style={{ textAlign: "center", padding: "1rem" }}
+                >
+                  Chargement...
+                </div>
+              )}
+            </aside>
           </div>
         </section>
       </div>

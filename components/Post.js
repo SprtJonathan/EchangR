@@ -1,31 +1,19 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import moment from "moment";
-import "moment/locale/fr";
 import Linkify from "react-linkify";
 import ReactPlayer from "react-player";
 
 import EmojiPicker from "./EmojiPicker";
 import CommentsContainer from "./CommentsContainer";
 import SelectMenuButton from "./SelectMenuButton";
-import UserCard from "./UserCard";
 import Modal from "./Modal";
+import UserTile from "./UserTile";
+import DateDisplay from "./DateDisplay";
 
 import styles from "./post.module.css";
 import utilStyles from "../styles/utils.module.css";
-
-function getTimeSincePost(date, boolean) {
-  let newDate = new Date(date);
-
-  if (boolean) {
-    newDate = moment(date).locale("fr").fromNow();
-  } else {
-    newDate = moment(date).format("DD/MM/YYYY - HH:mm");
-  }
-  return newDate;
-}
 
 export default function Post({ props, refreshPosts, onTagClick }) {
   const id = props.id;
@@ -64,10 +52,6 @@ export default function Post({ props, refreshPosts, onTagClick }) {
     following_count: props.following_count,
     is_followed_by_current_user: props.is_followed_by_current_user,
   };
-
-  const [dateToShow, setDateToShow] = useState(getTimeSincePost(date, true)); // Initialiser la valeur de dateToShow avec la date formatée en "x temps depuis"
-  const [dateCountdownFormat, setDateCountdownFormat] = useState(true);
-  const [displayUserCard, setDisplayUserCard] = useState(false);
 
   const [postReactions, setPostReactions] = useState([]);
 
@@ -172,15 +156,6 @@ export default function Post({ props, refreshPosts, onTagClick }) {
       }
     }
   };
-
-  /**
-   * The function switches the format of a date between "DD/MM/YYYY - HH:MM:SS" and "time since post"
-   * and updates the value of dateToShow.
-   */
-  function switchDateFormat() {
-    setDateToShow(getTimeSincePost(date, !dateCountdownFormat)); // Mettre à jour dateToShow avec la nouvelle valeur formatée en JJ/MM/AAAA - HH:MM:SS ou "x temps depuis"
-    setDateCountdownFormat(!dateCountdownFormat); // Inverser la valeur de dateCountdownFormat
-  }
 
   /**
    * The function checks if a given URL is a supported video player link and returns a video player
@@ -373,42 +348,9 @@ export default function Post({ props, refreshPosts, onTagClick }) {
             <div className={styles.authordate}>
               <div className={styles.author}>
                 <p>Par</p>
-                <div
-                  onMouseEnter={() => setDisplayUserCard(true)}
-                  onMouseLeave={() => setDisplayUserCard(false)}
-                  className={styles.authorTile}
-                >
-                  <Image
-                    priority
-                    className={utilStyles.profilePicture}
-                    src={authorData.profile_picture_url}
-                    height={32}
-                    width={32}
-                    alt={"Logo de " + authorData.username}
-                  />
-                  <p className={utilStyles.authorNames}>
-                    <span className={utilStyles.authorDisplayName}>
-                      {authorData.display_name}
-                    </span>
-                    <span className={utilStyles.authorUsername}>
-                      @{authorData.username}
-                    </span>
-                  </p>
-                  {displayUserCard && (
-                    <div className={styles.floatingUserCard}>
-                      <UserCard user={authorData} />
-                    </div>
-                  )}
-                </div>
+                <UserTile user={authorData} />
               </div>
-              <div
-                className={styles.date}
-                onClick={() => {
-                  switchDateFormat();
-                }}
-              >
-                {dateToShow}
-              </div>
+              <DateDisplay date={date} />
             </div>
           </div>
           <div className={styles.postContent}>

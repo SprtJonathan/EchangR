@@ -1,46 +1,12 @@
-import { useEffect, useState } from "react";
-import Image from "next/image";
-
-import moment from "moment";
-import "moment/locale/fr";
+import UserTile from "./UserTile";
+import DateDisplay from "./DateDisplay";
 
 import styles from "./comment.module.css";
-import utilStyles from "../styles/utils.module.css";
 import SelectMenuButton from "./SelectMenuButton";
-
-function getTimeSincePost(date, boolean) {
-  let newDate = new Date(date);
-
-  if (boolean) {
-    newDate = moment(date).locale("fr").fromNow();
-  } else {
-    newDate = moment(date).format("DD/MM/YYYY - HH:mm");
-  }
-  return newDate;
-}
 
 function Comment({ comment, loggedUser, onCommentDelete }) {
   //console.log(comment);
   const date = comment.created_at;
-
-  const [authorData, setAuthorData] = useState({});
-  const [dateToShow, setDateToShow] = useState(getTimeSincePost(date, true));
-  const [dateCountdownFormat, setDateCountdownFormat] = useState(true);
-
-  useEffect(() => {
-    fetchAuthorData();
-  }, []);
-
-  async function fetchAuthorData() {
-    const res = await fetch(`/api/users/id-${comment.author_id}`, {});
-    const data = await res.json();
-    setAuthorData(data);
-  }
-
-  function switchDateFormat() {
-    setDateToShow(getTimeSincePost(date, !dateCountdownFormat)); // Mettre à jour dateToShow avec la nouvelle valeur formatée en JJ/MM/AAAA - HH:MM:SS ou "x temps depuis"
-    setDateCountdownFormat(!dateCountdownFormat); // Inverser la valeur de dateCountdownFormat
-  }
 
   async function deleteComment() {
     const token = localStorage.getItem("token");
@@ -52,7 +18,10 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ commentId: comment.commentId }),
+          body: JSON.stringify({
+            comment_id: comment.comment_id,
+            author_id: comment.author_id,
+          }),
         });
 
         if (response.ok) {
@@ -70,29 +39,43 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
     }
   }
 
+  const authorData = {
+    user_id: comment.author_id,
+    username: comment.username,
+    display_name: comment.display_name,
+    user_description: comment.user_description,
+    profile_picture_url: comment.profile_picture_url,
+    created_at: comment.created_at,
+    updated_at: comment.updated_at,
+    followers_count: comment.followers_count,
+    following_count: comment.following_count,
+    is_followed_by_current_user: comment.is_followed_by_current_user,
+  };
+
   return (
     <div className={styles.commentContainer}>
       <div className={styles.commentHead}>
-        <div className={styles.author}>
+        {/* <div className={styles.author}>
           <div className={styles.authorTile}>
             <Image
               priority
-              className={utilStyles.profilePicture}
               src={authorData.profile_picture_url}
+              className={utilStyles.profilePicture}
               height={32}
               width={32}
               alt={"Logo de " + authorData.username}
             />
             <p className={utilStyles.authorNames}>
               <span className={utilStyles.authorDisplayName}>
-                {authorData.displayName}
+                {authorData.display_name}
               </span>
               <span className={utilStyles.authorUsername}>
                 @{authorData.username}
               </span>
             </p>
           </div>
-        </div>
+        </div> */}
+        <UserTile user={authorData} />
         <div>
           {loggedUser.user_id === comment.author_id && (
             <SelectMenuButton
@@ -113,14 +96,7 @@ function Comment({ comment, loggedUser, onCommentDelete }) {
         </div>
       </div>
 
-      <div
-        className={styles.date}
-        onClick={() => {
-          switchDateFormat();
-        }}
-      >
-        {dateToShow}
-      </div>
+      <DateDisplay date={date} />
       <div className={styles.commentContent}>{comment.comment}</div>
     </div>
   );

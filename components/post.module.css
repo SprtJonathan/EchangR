@@ -68,20 +68,6 @@
   margin-right: 1rem;
 }
 
-.authorTile {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.floatingUserCard {
-  position: absolute;
-  left: 100%;
-  height: fit-content;
-  z-index: 20;
-}
-
 .date {
   font-size: 0.9rem;
   color: #f8f8f8;

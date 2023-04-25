@@ -77,7 +77,7 @@ export default function Home() {
       // Les données de l'auteur sont déjà incluses dans la réponse de l'API
       const postsWithAuthor = data;
 
-      console.log(data);
+      //console.log(data);
 
       // Sort the posts by date in ascending order
       const sortedPosts = postsWithAuthor.sort(

@@ -2,6 +2,7 @@ import connection from "../../../db.js";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import nextConnect from "next-connect";
+import isAuthenticated from "../../../lib/isAuthenticated.js";
 
 import fs from "fs";
 import { promisify } from "util";
@@ -48,22 +49,22 @@ async function deleteImage(path) {
   }
 }
 
-// Fonction pour vérifier si un utilisateur est authentifié
-async function isAuthenticated(req) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+// // Fonction pour vérifier si un utilisateur est authentifié
+// async function isAuthenticated(req) {
+//   const authHeader = req.headers.authorization;
+//   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
-    return { isAuthenticated: false, message: "Token absent" };
-  }
+//   if (!token) {
+//     return { isAuthenticated: false, message: "Token absent" };
+//   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { isAuthenticated: true, user: decoded };
-  } catch (error) {
-    return { isAuthenticated: false, message: "Token invalide" };
-  }
-}
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     return { isAuthenticated: true, user: decoded };
+//   } catch (error) {
+//     return { isAuthenticated: false, message: "Token invalide" };
+//   }
+// }
 
 const apiRoute = nextConnect({
   // Handle any other HTTP method
@@ -94,7 +95,7 @@ apiRoute.get(async (req, res) => {
 
     const loggedUser_id = req.query.loggedUser_id || null;
 
-    console.log(loggedUser_id);
+    //console.log(loggedUser_id);
 
     if (postId) {
       // Si un ID de post est fourni, récupérez uniquement ce post spécifique

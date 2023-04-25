@@ -3,22 +3,22 @@ import styles from "./newComment.module.css";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-function NewComment({ postId, onCommentSubmit }) {
-  const [commentText, setCommentText] = useState("");
+function NewComment({ post_id, onCommentSubmit }) {
+  const [comment_text, setCommentText] = useState("");
 
-  const addComment = async (postId, commentText) => {
-    const token = localStorage.getItem("token");
-    if (token) {
+  const addComment = async (post_id, comment_text) => {
+    if (comment_text) {
       try {
+        const token = localStorage.getItem("token");
         const response = await fetch("/api/posts/comments", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ postId, comment: commentText }),
+          body: JSON.stringify({ post_id, comment: comment_text }),
         });
-
+        console.log(response);
         if (response.status === 201) {
           console.log("Comment added:", response.status);
           onCommentSubmit();
@@ -33,7 +33,7 @@ function NewComment({ postId, onCommentSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    addComment(postId, commentText);
+    addComment(post_id, comment_text);
     setCommentText("");
   };
 
@@ -43,7 +43,7 @@ function NewComment({ postId, onCommentSubmit }) {
     <form className={styles.addCommentContainer} onSubmit={handleSubmit}>
       <textarea
         className={styles.addCommentText}
-        value={commentText}
+        value={comment_text}
         onChange={(e) => setCommentText(e.target.value)}
         placeholder="Ajoutez un commentaire"
       />

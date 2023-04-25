@@ -5,13 +5,6 @@ import NewDM from "./NewDM";
 
 import styles from "./Inbox.module.css";
 
-import Pusher from "pusher-js";
-
-const pusher = new Pusher("c5177ffd69682f39d63b", {
-  cluster: "eu",
-  forceTLS: true,
-});
-
 const Inbox = ({ user_id, closeInbox }) => {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -39,33 +32,6 @@ const Inbox = ({ user_id, closeInbox }) => {
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
   };
-
-  useEffect(() => {
-    // Subscribe to the private channel for the user
-    const channel = pusher.subscribe(`private-user-${user_id}`);
-
-    // Listen for new messages
-    channel.bind("newMessage", (newMessage) => {
-      // Update the list of conversations
-      fetch(`/api/users/direct-messages/conversations?user_id=${user_id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setConversations(data);
-        });
-    });
-
-    // Clean up the event listener when the component is unmounted
-    return () => {
-      channel.unbind("newMessage");
-      pusher.unsubscribe(`private-user-${user_id}`);
-    };
-  }, [user_id]);
 
   console.log(selectedConversation);
 
@@ -108,5 +74,4 @@ const Inbox = ({ user_id, closeInbox }) => {
     </div>
   );
 };
-
 export default Inbox;
