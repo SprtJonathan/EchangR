@@ -11,6 +11,7 @@ export default function SignUp() {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const [message, setMessage] = useState("");
@@ -45,6 +46,10 @@ export default function SignUp() {
     }
   };
 
+  const handleDateChange = (e) => {
+    setBirthDate(e.target.value);
+  };
+
   const validateFields = async () => {
     const usernamePattern = /^[a-zA-Z0-9-_]+$/;
     const namePattern = /^[a-zA-Z]+(-[a-zA-Z]+)?$/;
@@ -67,6 +72,18 @@ export default function SignUp() {
 
     if (!emailPattern.test(email)) {
       setMessage("Format d'adresse e-mail invalide.");
+      return false;
+    }
+
+    const ageLimit = 13;
+    const birthDateObject = new Date(birthDate);
+    const limitDate = new Date();
+    limitDate.setFullYear(limitDate.getFullYear() - ageLimit);
+
+    if (birthDateObject > limitDate) {
+      setMessage(
+        `Vous devez avoir au moins ${ageLimit} ans pour vous inscrire.`
+      );
       return false;
     }
 
@@ -96,6 +113,7 @@ export default function SignUp() {
     formData.append("fname", fname);
     formData.append("lname", lname);
     formData.append("email", email);
+    formData.append("birthDate", birthDate);
     formData.append("password", password);
     formData.append("action", "signup");
 
@@ -233,6 +251,19 @@ export default function SignUp() {
             className={styles.input}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="birthDate" className={styles.label}>
+            Date de naissance :
+          </label>
+          <input
+            type="date"
+            id="birthDate"
+            className={styles.input}
+            value={birthDate}
+            onChange={handleDateChange}
             required
           />
         </div>

@@ -19,7 +19,7 @@ export default function UserCard({
     username,
     display_name,
     profile_picture_url,
-    userDescription,
+    user_description,
     created_at,
     updated_at,
     followers_count,
@@ -91,7 +91,7 @@ export default function UserCard({
         <div className={styles.userInfos}>
           <div className={styles.userCardHeader}>
             <div className={styles.userProfile}>
-              <Link href={`/@${username}`} className={styles.userProfile}>
+              <Link href={`/user/@${username}`} className={styles.userProfile}>
                 <Image
                   className={styles.profilePicture}
                   src={profile_picture_url}
@@ -101,13 +101,13 @@ export default function UserCard({
                 />
               </Link>
               <div className={styles.userInfo}>
-                <Link href={`/@${username}`}>
+                <Link href={`/user/@${username}`}>
                   <h3 className={styles.displayName}>{display_name}</h3>{" "}
                 </Link>
-                <Link href={`/@${username}`}>
+                <Link href={`/user/@${username}`}>
                   <p className={styles.username}>@{username}</p>
                 </Link>
-                {displayDescription && <div>{userDescription}</div>}
+                {displayDescription && <div>{user_description}</div>}
               </div>
             </div>
 
@@ -132,7 +132,7 @@ export default function UserCard({
       {displayDescription && !displayUserInfo && (
         <div className={styles.standaloneDescription}>
           <h3 className={styles.descriptionTitle}>À propos :</h3>
-          <p className={styles.descriptionContent}>{userDescription}</p>
+          <p className={styles.descriptionContent}>{user_description}</p>
         </div>
       )}
 

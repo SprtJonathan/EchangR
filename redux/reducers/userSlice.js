@@ -5,10 +5,14 @@ const userSlice = createSlice({
   initialState: {
     user_id: null,
     username: "",
-    displayName: "",
+    display_name: "",
+    fname: "",
+    lname: "",
     email: "",
+    birth_date: "",
     role_id: "",
     profile_picture_url: "",
+    user_description: "",
     following: "",
     followers: "",
   },
@@ -17,35 +21,57 @@ const userSlice = createSlice({
       const {
         user_id,
         username,
-        displayName,
+        display_name,
+        fname,
+        lname,
         email,
+        birth_date,
         role_id,
         profile_picture_url,
+        user_description,
         following,
         followers,
       } = action.payload;
       state.user_id = user_id;
       state.username = username;
-      state.displayName = displayName;
+      state.display_name = display_name;
+      state.fname = fname;
+      state.lname = lname;
       state.email = email;
+      state.birth_date = birth_date;
       state.role_id = role_id;
       state.profile_picture_url = profile_picture_url;
+      state.user_description = user_description;
       state.following = following;
       state.followers = followers;
+    },
+    updateUser: (state, action) => {
+      const { username, display_name, profile_picture_url, user_description } =
+        action.payload;
+      // console.log(state);
+      // console.log(action);
+      state.username = username;
+      state.display_name = display_name;
+      state.profile_picture_url = profile_picture_url;
+      state.user_description = user_description;
     },
     clearUser: (state) => {
       state.user_id = null;
       state.username = "";
-      state.displayName = "";
+      state.display_name = "";
+      state.fname;
+      state.lname;
       state.email = "";
+      state.birth_date = "";
       state.role_id = "";
       state.profile_picture_url = "";
+      state.user_description = "";
       state.following = "";
       state.followers = "";
     },
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, updateUser, clearUser } = userSlice.actions;
 
 export default userSlice.reducer;

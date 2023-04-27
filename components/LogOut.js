@@ -38,6 +38,7 @@ function LogoutButton(props) {
           <g />
         </g>
       </svg>
+      <div className={styles.logout}>Deconnexion</div>
     </button>
   );
 }

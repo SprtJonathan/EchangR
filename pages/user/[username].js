@@ -3,12 +3,12 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import styles from "./userPage.module.css";
-import Layout from "../components/layout";
+import Layout from "../../components/layout";
 
-import UserCard from "../components/UserCard";
-import Post from "../components/Post";
-import NewStatus from "../components/NewStatus";
-import Status from "../components/Status";
+import UserCard from "../../components/UserCard";
+import Post from "../../components/Post";
+import NewStatus from "../../components/NewStatus";
+import Status from "../../components/Status";
 
 const UserProfile = () => {
   const router = useRouter();

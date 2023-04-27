@@ -69,8 +69,16 @@ apiRoute.post(async (req, res) => {
   // Set cache control header
   res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate");
 
-  const { username, displayName, description, fname, lname, email, password } =
-    req.body;
+  const {
+    username,
+    displayName,
+    description,
+    fname,
+    lname,
+    email,
+    birth_date,
+    password,
+  } = req.body;
 
   if (!username || !email || !password) {
     res.status(400).json({
@@ -93,6 +101,7 @@ apiRoute.post(async (req, res) => {
       fname,
       lname,
       email,
+      birth_date,
       password: hashedPassword,
       profile_picture_url: profile_picture_url || "/images/ProfileDefault.png",
     };
@@ -105,7 +114,7 @@ apiRoute.post(async (req, res) => {
 
       limit(() => {
         connection.query(
-          `INSERT INTO users (username, display_name, user_description, fname, lname, email, password, profile_picture_url, email_verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          `INSERT INTO users (username, display_name, user_description, fname, lname, email, birth_date, password, profile_picture_url, email_verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
           [
             newUser.username,
             newUser.displayName,
@@ -113,6 +122,7 @@ apiRoute.post(async (req, res) => {
             newUser.fname,
             newUser.lname,
             newUser.email,
+            newUser.birth_date,
             newUser.password,
             newUser.profile_picture_url,
             emailVerificationToken,

@@ -11,15 +11,23 @@ export default async function generateToken(user) {
   if (rows.length === 0 || rows[0].email_verification_token !== null) {
     throw new Error("Email non vérifié");
   }
+  // console.log(user);
+
+  const date = new Date(user.birth_date);
+  const formattedDate = date.toISOString().split("T")[0];
 
   // Define the data to be encoded in the token
   const data = {
     user_id: user.user_id,
     username: user.username,
-    displayName: user.display_name,
+    display_name: user.display_name,
+    fname: user.fname,
+    lname: user.lname,
     email: user.email,
+    birth_date: formattedDate,
     role_id: user.role_id,
     profile_picture_url: user.profile_picture_url,
+    user_description: user.user_description,
     following: user.following,
     followers: user.followers,
   };
@@ -27,7 +35,7 @@ export default async function generateToken(user) {
   // Set the options for the token
   const options = {
     expiresIn: "1d",
-    issuer: "chat.ddpcrew.fr",
+    issuer: "e-changr.vercel.app",
   };
 
   // Generate the token and return it

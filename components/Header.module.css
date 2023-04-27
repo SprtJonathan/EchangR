@@ -48,23 +48,40 @@
 }
 
 .userButtons {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 48px;
-  border-radius: 10px;
+}
+
+.connectedUser {
   overflow: hidden;
+  display: flex;
+
+  align-items: center;
+  border-radius: 10px 0 0 10px;
+  height: 48px;
+  padding: 0;
+  margin: 0;
+  max-width: 100px;
 }
 
 .loginButton,
 .signupButton {
   font-weight: 600;
-  height: 100%;
   border-radius: 0px;
-  padding: 5px 15px;
+  padding: 2px 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: auto;
 
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.logout {
+  color: rgb(255, 68, 68);
 }
 
 .search {

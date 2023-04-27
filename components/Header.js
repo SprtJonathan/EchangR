@@ -109,16 +109,27 @@ export default function Header({ home, setSearchQuery }) {
             <div className={styles.DMCenter}>
               <DirectMessagesCenter />
             </div>
-            <button>
+            <button className={styles.connectedUser}>
               <Link
-                href={`/@${loggedUser.username}`}
+                href={`/user/@${loggedUser.username}`}
                 className={styles.loginButton}
               >
                 <LoggedUser />
               </Link>
             </button>
             <div className={utilStyles.divider}></div>
-            <LogOut />
+            <SelectMenuButton
+              stylesFile="SelectMenuButtonLoggedUser"
+              toggleText="⋮"
+              content={
+                <>
+                  <Link href={`/settings`}>
+                    <button className={styles.loginButton}>Paramètres</button>
+                  </Link>
+                  <LogOut />
+                </>
+              }
+            />
           </section>
         </>
       ) : (

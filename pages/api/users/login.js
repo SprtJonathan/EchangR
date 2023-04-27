@@ -48,6 +48,7 @@ apiRoute.post(async (req, res) => {
             });
           } else {
             const user = results.rows[0];
+            console.log(user)
             const passwordMatch = await bcrypt.compare(password, user.password);
             if (passwordMatch && user.email_verified) {
               try {

@@ -20,10 +20,14 @@ export default async function handler(req, res) {
     const {
       user_id,
       username,
-      displayName,
+      display_name,
+      fname,
+      lname,
       email,
+      birth_date,
       role_id,
       profile_picture_url,
+      user_description,
       following,
       followers,
     } = decoded;
@@ -33,10 +37,14 @@ export default async function handler(req, res) {
     res.status(200).json({
       user_id,
       username,
-      displayName,
+      display_name,
+      fname,
+      lname,
       email,
+      birth_date,
       role_id,
       profile_picture_url,
+      user_description,
       following,
       followers,
     });

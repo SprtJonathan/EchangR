@@ -34,10 +34,14 @@ function getLoggedUser() {
       const {
         user_id,
         username,
-        displayName,
+        display_name,
+        fname,
+        lname,
         email,
+        birth_date,
         role_id,
         profile_picture_url,
+        user_description,
         following,
         followers,
       } = userData;
@@ -45,10 +49,14 @@ function getLoggedUser() {
         setUser({
           user_id,
           username,
-          displayName,
+          display_name,
+          fname,
+          lname,
           email,
+          birth_date,
           role_id,
           profile_picture_url,
+          user_description,
           following,
           followers,
         })

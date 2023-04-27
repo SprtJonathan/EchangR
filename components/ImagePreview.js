@@ -2,9 +2,17 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import styles from "./ImagePreview.module.css";
 
-const ImagePreview = ({ attachments, onAttachmentsChange, multiple, type }) => {
+const ImagePreview = ({
+  attachments,
+  onAttachmentsChange,
+  multiple,
+  type,
+  defaultImage,
+}) => {
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [singlePreviewUrl, setSinglePreviewUrl] = useState(null); // Ajoutez cet état
+  const [singlePreviewUrl, setSinglePreviewUrl] = useState(
+    defaultImage || null
+  );
   const inputRef = useRef(null);
 
   const UploadIcon = (

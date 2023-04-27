@@ -31,7 +31,7 @@ export default function UserTile({ user }) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Link href={`/@${username}`} className={utilStyles.authorDisplayName}>
+        <Link href={`/user/@${username}`} className={utilStyles.authorDisplayName}>
           <Image
             priority
             src={profile_picture_url}
@@ -42,10 +42,10 @@ export default function UserTile({ user }) {
           />
         </Link>
         <p className={utilStyles.authorNames}>
-          <Link href={`/@${username}`} className={utilStyles.authorDisplayName}>
+          <Link href={`/user/@${username}`} className={utilStyles.authorDisplayName}>
             {display_name}
           </Link>
-          <Link href={`/@${username}`} className={utilStyles.authorUsername}>
+          <Link href={`/user/@${username}`} className={utilStyles.authorUsername}>
             @{username}
           </Link>
         </p>
