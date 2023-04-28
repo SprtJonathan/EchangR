@@ -168,6 +168,7 @@ apiRoute.get(async (req, res) => {
 
 apiRoute.post(async (req, res) => {
   try {
+    console.log("POST request received");
     // Set cache control header
     res.setHeader(
       "Cache-Control",
@@ -180,7 +181,7 @@ apiRoute.post(async (req, res) => {
       return;
     }
 
-    // console.log(req.files);
+    console.log("User authenticated");
 
     try {
       const { title, description, tags } = req.body;
@@ -195,7 +196,13 @@ apiRoute.post(async (req, res) => {
         });
       }
 
-      //console.log(tags);
+      console.log("Post data:", {
+        title,
+        description,
+        tags,
+        author_id,
+        attachmentsPaths,
+      });
 
       connection.query(
         "INSERT INTO posts (title, description, attachment, tags, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
@@ -208,6 +215,8 @@ apiRoute.post(async (req, res) => {
           }
 
           const post_id = results.rows[0].id;
+
+          console.log("Post created with id", post_id);
 
           res.status(201).json({
             id: post_id,
