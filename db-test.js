@@ -11,6 +11,8 @@ const client = new Client({
   },
 });
 
+console.log("test db-test")
+
 async function testDb() {
   await client.connect();
 
