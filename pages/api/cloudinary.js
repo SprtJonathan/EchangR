@@ -38,7 +38,7 @@ export async function uploadImageToCloudinary(
     folder: folder,
     ...options,
   });
-
+  console.log("Uplading image");
   return result.secure_url;
 }
 
