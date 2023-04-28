@@ -4,6 +4,10 @@ import fs from "fs";
 import { promisify } from "util";
 import nextConnect from "next-connect";
 import generateToken from "../auth/generateToken";
+import {
+  uploadImageToCloudinary,
+  deleteImageFromCloudinary,
+} from "../cloudinary";
 
 import isAuthenticated from "../../../lib/isAuthenticated.js";
 
@@ -65,18 +69,14 @@ apiRoute.put(async (req, res) => {
   const profilePictureFile = req.file;
   let new_profile_picture_url;
   if (profilePictureFile) {
-    new_profile_picture_url =
-      "/uploads/users/profile-pictures/" + profilePictureFile.filename;
-  }
-
-  // Si une nouvelle image est uploadée et est différente de l'actuelle
-  if (
-    new_profile_picture_url &&
-    decoded.profile_picture_url !== new_profile_picture_url
-  ) {
-    // Supprimer l'ancienne image
-    const old_image_path = "." + decoded.profile_picture_url;
-    await deleteImage(old_image_path);
+    const publicId = decoded.profile_picture_url
+      .replace(/.*\//, "")
+      .split(".")[0];
+    const deleteResult = await deleteImageFromCloudinary(publicId);
+    new_profile_picture_url = await uploadImageToCloudinary(
+      profilePictureFile,
+      `uploads/users/profile-pictures/${username}`
+    );
   } else {
     // Si aucune nouvelle image n'est uploadée, garder l'ancienne
     new_profile_picture_url = decoded.profile_picture_url;

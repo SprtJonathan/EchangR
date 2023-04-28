@@ -3,6 +3,10 @@ import jwt from "jsonwebtoken";
 import multer from "multer";
 import nextConnect from "next-connect";
 import isAuthenticated from "../../../lib/isAuthenticated.js";
+import {
+  uploadImageToCloudinary,
+  deleteImageFromCloudinary,
+} from "../cloudinary";
 
 import fs from "fs";
 import { promisify } from "util";
@@ -168,70 +172,50 @@ apiRoute.get(async (req, res) => {
 
 apiRoute.post(async (req, res) => {
   try {
-    console.log("POST request received");
-    // Set cache control header
-    res.setHeader(
-      "Cache-Control",
-      "public, max-age=60, stale-while-revalidate"
-    );
-
     const authResult = await isAuthenticated(req);
     if (!authResult.isAuthenticated) {
       res.status(401).json({ message: authResult.message });
       return;
     }
 
-    console.log("User authenticated");
+    const { title, description, tags } = req.body;
+    const author_id = authResult.user.user_id;
 
-    try {
-      const { title, description, tags } = req.body;
-      const author_id = authResult.user.user_id;
-      let attachments = req.files;
-      let attachmentsPaths = [];
+    const attachments = req.files;
+    const attachmentsPaths = [];
 
-      if (attachments.length) {
-        attachments.forEach((attachment) => {
-          const path = "/uploads/posts/" + attachment.filename;
-          attachmentsPaths.push(`${path}`);
+    if (attachments.length) {
+      for (const attachment of attachments) {
+        const fileUrl = await uploadImageToCloudinary(
+          attachment,
+          `uploads/users/${author_id}/posts`
+        );
+        attachmentsPaths.push(fileUrl);
+      }
+    }
+
+    connection.query(
+      "INSERT INTO posts (title, description, attachment, tags, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [title, description, JSON.stringify(attachmentsPaths), tags, author_id],
+      function (error, results, fields) {
+        if (error) {
+          console.error("Error inserting post into database:", error);
+          res.status(500).json({ message: "Error creating post" });
+          return;
+        }
+
+        const post_id = results.rows[0].id;
+
+        res.status(201).json({
+          id: post_id,
+          title,
+          description,
+          attachmentsPaths,
+          tags,
+          author_id,
         });
       }
-
-      console.log("Post data:", {
-        title,
-        description,
-        tags,
-        author_id,
-        attachmentsPaths,
-      });
-
-      connection.query(
-        "INSERT INTO posts (title, description, attachment, tags, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-        [title, description, JSON.stringify(attachmentsPaths), tags, author_id],
-        function (error, results, fields) {
-          if (error) {
-            console.error("Error inserting post into database:", error);
-            res.status(500).json({ message: "Error creating post" });
-            return;
-          }
-
-          const post_id = results.rows[0].id;
-
-          console.log("Post created with id", post_id);
-
-          res.status(201).json({
-            id: post_id,
-            title,
-            description,
-            attachmentsPaths,
-            tags,
-            author_id,
-          });
-        }
-      );
-    } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).json({ message: "Error creating post" });
-    }
+    );
   } catch (error) {
     console.error("Error in POST route:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -297,8 +281,8 @@ apiRoute.delete(async (req, res) => {
 
         if (attachmentPaths.length > 0) {
           for (const path of attachmentPaths) {
-            const fullPath = `./public${path}`;
-            await deleteImage(fullPath);
+            const publicId = path.split("/").pop().split(".")[0];
+            await deleteImageFromCloudinary(publicId);
           }
         }
 

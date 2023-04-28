@@ -4,6 +4,7 @@ import pLimit from "p-limit";
 import { v4 as uuidv4 } from "uuid";
 import sendVerificationEmail from "../sendVerificationEmail";
 import nextConnect from "next-connect";
+import { uploadImageToCloudinary } from "../cloudinary";
 
 import multer from "multer";
 import fs from "fs";
@@ -91,8 +92,18 @@ apiRoute.post(async (req, res) => {
     const profilePictureFile = req.file;
     let profile_picture_url;
     if (profilePictureFile) {
-      profile_picture_url =
-        "/uploads/users/profile-pictures/" + profilePictureFile.filename;
+      try {
+        profile_picture_url = await uploadImageToCloudinary(
+          profilePictureFile,
+          `uploads/users/profile-pictures/${username}`
+        );
+      } catch (error) {
+        console.error("Erreur lors de l'upload de l'image :", error);
+        res.status(500).json({
+          message: "Une erreur s'est produite lors de l'upload de l'image.",
+        });
+        return;
+      }
     }
     const newUser = {
       username,
