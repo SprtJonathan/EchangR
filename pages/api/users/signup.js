@@ -139,7 +139,7 @@ apiRoute.post(async (req, res) => {
             emailVerificationToken,
           ],
           (error, result) => {
-            console.log(error);
+            //console.log(error);
             if (error) {
               res.status(500).json({
                 message:

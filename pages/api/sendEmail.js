@@ -16,8 +16,11 @@ async function sendEmail(to, subject, html) {
     htmlContent: html,
     sender: { email: process.env.SMTP_FROM_EMAIL },
   };
+  console.log("sendEmail function called");
   try {
+    console.log("sending email...");
     let data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("email :" + data);
     return { success: true };
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'email:", error);
