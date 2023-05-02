@@ -19,6 +19,9 @@ async function sendEmail(to, subject, html) {
   console.log("sendEmail function called");
   try {
     console.log("sending email...");
+    console.log("API key:", process.env.SENDINBLUE_API_KEY);
+    console.log("From email:", process.env.SMTP_FROM_EMAIL);
+    console.log("To email:", to);
     let data = await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log("email :" + data);
     return { success: true };
