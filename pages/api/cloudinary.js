@@ -34,13 +34,21 @@ export async function uploadImageToCloudinary(
   folder = "default",
   options = {}
 ) {
-  const result = await cloudinary.v2.uploader.upload(file.path, {
-    folder: folder,
-    ...options,
-  });
-  console.log("Uplading image");
+  const base64Image = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+
+  const result = await cloudinary.v2.uploader.upload(
+    base64Image,
+    {
+      folder: folder,
+      ...options,
+      resource_type: "image",
+    }
+  );
+
+  console.log("Uploading image");
   return result.secure_url;
 }
+
 
 export async function deleteImageFromCloudinary(publicId) {
   try {

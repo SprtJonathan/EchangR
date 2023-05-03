@@ -8,9 +8,6 @@ import {
   deleteImageFromCloudinary,
 } from "../cloudinary";
 
-import fs from "fs";
-import { promisify } from "util";
-
 // Returns a Multer instance that provides several methods for generating
 // middleware that process files uploaded in multipart/form-data format.
 const upload = multer({
@@ -26,17 +23,6 @@ const upload = multer({
     cb(null, true);
   },
 });
-
-const unlinkAsync = promisify(fs.unlink);
-
-async function deleteImage(path) {
-  try {
-    await unlinkAsync(path);
-    console.log("Image supprimée :", path);
-  } catch (error) {
-    console.error("Erreur lors de la suppression de l'image :", error);
-  }
-}
 
 // // Fonction pour vérifier si un utilisateur est authentifié
 // async function isAuthenticated(req) {
@@ -167,6 +153,7 @@ apiRoute.post(async (req, res) => {
     const author_id = authResult.user.user_id;
 
     const attachments = req.files;
+    console.log(attachments)
     const attachmentsPaths = [];
 
     if (attachments.length) {
