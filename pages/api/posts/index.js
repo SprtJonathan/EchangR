@@ -13,7 +13,7 @@ import { promisify } from "util";
 
 // Returns a Multer instance that provides several methods for generating
 // middleware that process files uploaded in multipart/form-data format.
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/uploads/posts");
   },
