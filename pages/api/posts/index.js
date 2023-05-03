@@ -7,12 +7,13 @@ import {
   uploadImageToCloudinary,
   deleteImageFromCloudinary,
 } from "../cloudinary";
+import { COMPILER_NAMES } from "next/dist/shared/lib/constants.js";
 
 // Returns a Multer instance that provides several methods for generating
 // middleware that process files uploaded in multipart/form-data format.
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 15 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -58,7 +59,7 @@ apiRoute.get(async (req, res) => {
     // Set cache control header
     res.setHeader(
       "Cache-Control",
-      "public, max-age=10, stale-while-revalidate"
+      "public, max-age=1, stale-while-revalidate"
     );
 
     const postId = req.query.id;
@@ -153,7 +154,7 @@ apiRoute.post(async (req, res) => {
     const author_id = authResult.user.user_id;
 
     const attachments = req.files;
-    console.log(attachments)
+    console.log(attachments);
     const attachmentsPaths = [];
 
     if (attachments.length) {
@@ -211,10 +212,10 @@ apiRoute.put(async (req, res) => {
 apiRoute.delete(async (req, res) => {
   try {
     // Set cache control header
-    res.setHeader(
-      "Cache-Control",
-      "public, max-age=10, stale-while-revalidate"
-    );
+    // res.setHeader(
+    //   "Cache-Control",
+    //   "public, max-age=10, stale-while-revalidate"
+    // );
 
     const authResult = await isAuthenticated(req);
     if (!authResult.isAuthenticated) {
@@ -237,6 +238,11 @@ apiRoute.delete(async (req, res) => {
           [post_id]
         );
 
+        if (!rows[0]) {
+          res.status(404).json({ message: "Post not found" });
+          return;
+        }
+
         const attachmentPaths = JSON.parse(rows[0].attachment);
 
         await connection.query("DELETE FROM comments WHERE post_id = $1", [
@@ -253,8 +259,13 @@ apiRoute.delete(async (req, res) => {
 
         if (attachmentPaths.length > 0) {
           for (const path of attachmentPaths) {
-            const publicId = path.split("/").pop().split(".")[0];
-            await deleteImageFromCloudinary(publicId);
+            console.log(path);
+            const publicId =
+              `uploads/users/${author_id}/posts/` +
+              path.split("/").pop().split(".")[0];
+            if (publicId) {
+              await deleteImageFromCloudinary(publicId);
+            }
           }
         }
 

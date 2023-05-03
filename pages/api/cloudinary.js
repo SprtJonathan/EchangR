@@ -53,6 +53,7 @@ export async function uploadImageToCloudinary(
 export async function deleteImageFromCloudinary(publicId) {
   try {
     const result = await cloudinary.v2.uploader.destroy(publicId);
+    // console.log(result)
     console.log("Image supprimée :", result);
   } catch (error) {
     console.error("Erreur lors de la suppression de l'image :", error);

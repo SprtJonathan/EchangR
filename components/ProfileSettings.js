@@ -11,7 +11,7 @@ export default function ProfileSettings() {
   const loggedUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  console.log(loggedUser);
+  //console.log(loggedUser);
 
   const [username, setUsername] = useState(loggedUser.username);
   const [display_name, setDisplayName] = useState(loggedUser.display_name);

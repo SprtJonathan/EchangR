@@ -36,8 +36,8 @@ export default function UserTile({ user }) {
             priority
             src={profile_picture_url}
             className={utilStyles.profilePicture}
-            height={32}
-            width={32}
+            height={100}
+            width={100}
             alt={"Logo de " + username}
           />
         </Link>

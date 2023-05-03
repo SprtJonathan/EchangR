@@ -14,23 +14,9 @@ const limit = pLimit(5); // Limite à 5 requêtes simultanées
 
 // Returns a Multer instance that provides several methods for generating
 // middleware that process files uploaded in multipart/form-data format.
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/uploads/users/profile-pictures");
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      Date.now() +
-        "-" +
-        file.originalname.replace(/\\/g, "/").replace(/\s+/g, "_")
-    );
-  },
-});
-
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 15 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -40,7 +26,6 @@ const upload = multer({
     }
     cb(null, true);
   },
-  fields: [{ name: "profile_picture", maxCount: 10 }], // Si ça ne fonctionne plus, retourner à arrayFields
 });
 
 const unlinkAsync = promisify(fs.unlink);

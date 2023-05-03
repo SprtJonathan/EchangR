@@ -7,6 +7,7 @@ import ProfileSettings from "../components/ProfileSettings";
 import AccountSettings from "../components/AccountSettings";
 
 import styles from "./settings.module.css";
+import DeleteAccount from "../components/DeleteAccount";
 
 export default function Settings() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function Settings() {
       case "account":
         return <AccountSettings />;
       case "delete":
-        return <div>Suppression du compte</div>;
+        return <DeleteAccount />;
       default:
         return null;
     }

@@ -1,7 +1,5 @@
 import connection from "../../../db.js";
 import multer from "multer";
-import fs from "fs";
-import { promisify } from "util";
 import nextConnect from "next-connect";
 import generateToken from "../auth/generateToken";
 import {
@@ -11,25 +9,9 @@ import {
 
 import isAuthenticated from "../../../lib/isAuthenticated.js";
 
-const unlinkAsync = promisify(fs.unlink);
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/uploads/users/profile-pictures");
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      Date.now() +
-        "-" +
-        file.originalname.replace(/\\/g, "/").replace(/\s+/g, "_")
-    );
-  },
-});
-
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 15 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!allowedTypes.includes(file.mimetype)) {
@@ -69,9 +51,9 @@ apiRoute.put(async (req, res) => {
   const profilePictureFile = req.file;
   let new_profile_picture_url;
   if (profilePictureFile) {
-    const publicId = decoded.profile_picture_url
-      .replace(/.*\//, "")
-      .split(".")[0];
+    const publicId =
+      `uploads/users/profile-pictures/${username}/` +
+      decoded.profile_picture_url.replace(/.*\//, "").split(".")[0];
     const deleteResult = await deleteImageFromCloudinary(publicId);
     new_profile_picture_url = await uploadImageToCloudinary(
       profilePictureFile,
@@ -156,14 +138,6 @@ apiRoute.put(async (req, res) => {
     }
   });
 });
-
-async function deleteImage(path) {
-  try {
-    await unlinkAsync("./public/" + path);
-  } catch (error) {
-    console.error("Erreur lors de la suppression de l'image :", error);
-  }
-}
 
 export default apiRoute;
 
