@@ -30,9 +30,7 @@ Le projet est déployé sur Vercel et visionnable en [cliquant ici](https://e-ch
 
 Projet a été créé par Jonathan Binot avec l'aide de ChatGPT pour certaines fonctionnalités et redondances.
 
---
-
-Sure, here's the English version of the README.md for E-ChangR:
+---
 
 # E-ChangR
 
