@@ -168,14 +168,8 @@ export default function SignUp() {
           <label className={styles.label} htmlFor="username">
             Nom unique d'utilisateur
           </label>
-          <div>
-            <input
-              type="text"
-              id=""
-              className={styles.inputDouble}
-              value="/user/@"
-              disabled
-            />
+          <div className={styles.uniqueUsername}>
+            <span className={styles.inputDouble}>@</span>
             <input
               type="text"
               id="username"
